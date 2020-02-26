@@ -11,7 +11,6 @@ mongoClient.connect(url, (err, db) => {
 
   } else {
 
-
     console.log("Connected with mongoClient");
     const rideShareDb = db.db("rideShareDb"); // This is the database
     const collection = rideShareDb.collection("user"); // This is the user table
