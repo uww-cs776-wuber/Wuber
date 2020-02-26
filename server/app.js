@@ -9,7 +9,6 @@ mongoClient.connect(url, (err, db) => {
   if (err) {
     console.log("Error while connection mongoClient");
 
-
   } else {
 
 
