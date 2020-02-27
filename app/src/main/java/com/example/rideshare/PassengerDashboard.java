@@ -44,7 +44,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     private LocationListener locationListener;
     public TextView locationTxt;
     String username;
-    private String BASEURL="http://172.23.73.141:3000"; //current IP of machine.
+    private String BASEURL="http://192.168.1.89:3000"; //current IP of machine.
     private RetrofitInterface retrofitInterface;
     private Retrofit retrofit;
     @Override
@@ -116,20 +116,28 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                 final String[] userLocation={""};
                 if(!locationTxt.getText().toString().equals("") && !timeTxt.getText().toString().equals("") && !destinationTxt.getText().toString().equals("")){
 
-                    // Send request to server and receiver response from server for client's email and pickup time
+                    // Send ride request by client to server and receive response from server
 
-                    HashMap<String,String> emailTime= new HashMap<>();
-                    emailTime.put("email",username);
-                    emailTime.put("pickuptime",timeTxt.getText().toString());
+                    HashMap<String,String> clientRequest= new HashMap<>();
+                    clientRequest.put("email",username);
+                    clientRequest.put("destination",destinationTxt.getText().toString());
+                    clientRequest.put("gpsCordinates",locationTxt.getText().toString());
+                    clientRequest.put("pickuptime",timeTxt.getText().toString());
 
-                    Call<Result> callEmailTime = retrofitInterface.executePickupTime(emailTime);
-                    callEmailTime.enqueue(new Callback<Result>() {
+                    Call<Result> call = retrofitInterface.executeClientRequest(clientRequest);
+                    call.enqueue(new Callback<Result>() {
                         @Override
                         public void onResponse(Call<Result> call, Response<Result> response) {
                             if (response.code() == 200) {
                                 Result result= response.body();
                                 userEmail[0] =result.getEmail();
                                 pickupTime[0]=result.getPickupTime();
+                                destination[0]=result.getDestination();
+                                userLocation[0]=result.getGpsCordinates();
+
+                                //Push notification function
+                                rideNotificaton(userEmail[0],userLocation[0],destination[0],pickupTime[0]);
+
                                 Toast.makeText(PassengerDashboard.this, result.getEmail()+" "+result.getPickupTime(), Toast.LENGTH_LONG).show();
                             } else if (response.code() == 400) {
                                 Toast.makeText(PassengerDashboard.this, "Request Failed", Toast.LENGTH_LONG).show();
@@ -141,60 +149,6 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                             Toast.makeText(PassengerDashboard.this, t.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
-                    // Send request to server and receiver response from server for client's email and  destination
-
-                    HashMap<String,String> emailDes= new HashMap<>();
-                    emailDes.put("email",username);
-                    emailDes.put("destination",destinationTxt.getText().toString());
-
-                    Call<Result> callEmailDes = retrofitInterface.executeDesTime(emailDes);
-                    callEmailDes.enqueue(new Callback<Result>() {
-                        @Override
-                        public void onResponse(Call<Result> call, Response<Result> response) {
-                            if (response.code() == 200) {
-                                Result result= response.body();
-                                userEmail[0] =result.getEmail();
-                                destination[0]=result.getDestination();
-                                Toast.makeText(PassengerDashboard.this, result.getEmail()+" "+result.getDestination(), Toast.LENGTH_LONG).show();
-                            } else if (response.code() == 400) {
-                                Toast.makeText(PassengerDashboard.this, "Request Failed", Toast.LENGTH_LONG).show();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<Result> call, Throwable t) {
-                            Toast.makeText(PassengerDashboard.this, t.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    });
-
-
-
-                    // Send request to server and receiver response from server for client's source location and email
-                HashMap<String, String> hm = new HashMap<>();
-                hm.put("email", username);
-                hm.put("location", locationTxt.getText().toString());
-                Call<Result> call = retrofitInterface.executeCLocate(hm);
-
-                call.enqueue(new Callback<Result>() {
-                    @Override
-                    public void onResponse(Call<Result> call, Response<Result> response) {
-                        if (response.code() == 200) {
-                            Result result= response.body();
-                            userEmail[0]=result.getEmail();
-                            userLocation[0]=result.getGpsCordinates();
-                            rideNotificaton(userEmail[0],userLocation[0],destination[0],pickupTime[0]);
-                            Toast.makeText(PassengerDashboard.this, result.getEmail()+" "+result.getGpsCordinates(), Toast.LENGTH_LONG).show();
-                        } else if (response.code() == 400) {
-                            Toast.makeText(PassengerDashboard.this, "Request Failed", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<Result> call, Throwable t) {
-                        Toast.makeText(PassengerDashboard.this, t.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-
             }
                 else
                 {
