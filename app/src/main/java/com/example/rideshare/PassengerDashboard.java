@@ -134,7 +134,6 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                                 pickupTime[0]=result.getPickupTime();
                                 destination[0]=result.getDestination();
                                 userLocation[0]=result.getGpsCordinates();
-
                                 //Push notification function
                                 rideNotificaton(userEmail[0],userLocation[0],destination[0],pickupTime[0]);
 
