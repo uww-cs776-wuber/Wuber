@@ -44,8 +44,9 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     private LocationListener locationListener;
     public TextView locationTxt;
     String username;
-    private String BASEURL="http://192.168.1.89:3000"; //current IP of machine.
+
     private RetrofitInterface retrofitInterface;
+    private String BASEURL= retrofitInterface.BASEURL;
     private Retrofit retrofit;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +69,10 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         usernameTxt.setText(splitDomain[0]);
 
         locationTxt=(TextView)findViewById(R.id.location) ;
+        findViewById(R.id.maplocation).setVisibility(View.INVISIBLE);
 
         final EditText destinationTxt=(EditText) findViewById(R.id.destinationTxt);
+
         //location service
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -94,7 +97,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                 startActivity(intent);
             }
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // To check the Android version to access location permissions
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -105,19 +108,15 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
             }
         }
 
+
         // Function to handle Request ride from client
         findViewById(R.id.requestRide).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                final String[] userEmail = {""};
-                final String[] destination={""};
-                final String[] pickupTime={""};
-                final String[] userLocation={""};
                 if(!locationTxt.getText().toString().equals("") && !timeTxt.getText().toString().equals("") && !destinationTxt.getText().toString().equals("")){
 
                     // Send ride request by client to server and receive response from server
-
                     HashMap<String,String> clientRequest= new HashMap<>();
                     clientRequest.put("email",username);
                     clientRequest.put("destination",destinationTxt.getText().toString());
@@ -130,13 +129,6 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                         public void onResponse(Call<Result> call, Response<Result> response) {
                             if (response.code() == 200) {
                                 Result result= response.body();
-                                userEmail[0] =result.getEmail();
-                                pickupTime[0]=result.getPickupTime();
-                                destination[0]=result.getDestination();
-                                userLocation[0]=result.getGpsCordinates();
-                                //Push notification function
-                                rideNotificaton(userEmail[0],userLocation[0],destination[0],pickupTime[0]);
-
                                 Toast.makeText(PassengerDashboard.this, result.getEmail()+" "+result.getPickupTime(), Toast.LENGTH_LONG).show();
                             } else if (response.code() == 400) {
                                 Toast.makeText(PassengerDashboard.this, "Request Failed", Toast.LENGTH_LONG).show();
@@ -171,31 +163,6 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     }
 
 
-    public void rideNotificaton(String email, String userLocation, String destination, String pickupTime ){
-        String username[]=email.split("@");
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "notify_001")
-                .setSmallIcon(R.drawable.ic_ride)
-                .setContentTitle("Pick up")
-                .setContentText(username[0]+" wants a ride!")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText("Passenger: "+username[0]+"\n"+"Location: "+userLocation+"\n"+"Destination: "+destination+"\n"+"Pickup Time: "+pickupTime)).setAutoCancel(true);
-
-        NotificationManager
-        mNotificationManager =
-                (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
-            String channelId = "Your_channel_id";
-            NotificationChannel channel = new NotificationChannel(
-                    channelId,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_HIGH);
-            mNotificationManager.createNotificationChannel(channel);
-            builder.setChannelId(channelId);
-        }
-        mNotificationManager.notify(0, builder.build());
-    }
     public void getLocation() {
         try {
             locationManager.requestLocationUpdates("gps", 5000, 0, locationListener);

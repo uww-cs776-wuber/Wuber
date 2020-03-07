@@ -1,6 +1,7 @@
 package com.example.rideshare;
 
 public class Result {
+    private String userType;
     private String email;
     private String gpsCordinates;
     private String pickuptime;
@@ -15,4 +16,5 @@ public class Result {
     public String getPickupTime() {
         return pickuptime;
     }
+    public String getUserType() { return userType; }
 }

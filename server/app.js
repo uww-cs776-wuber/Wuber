@@ -13,13 +13,14 @@ mongoClient.connect(url, (err, db) => {
     const rideShareDb = db.db("rideShareDb"); // This is the database
     const collection = rideShareDb.collection("user"); // This is the user table
     const locationTable = rideShareDb.collection("locationTable"); // This is the Table for storing everything sent by the passenger while requesting a ride
-    const driverTable = rideShareDb.collection("driverTable"); // This is the driver table.
+  
 
     app.post("/signup", (req, res) => {
       //signup route
       const newUser = {
         email: req.body.email,
-        password: req.body.password
+        password: req.body.password,
+        userType: req.body.userType
       };
       console.log(newUser);
       const duplicateUser = { email: newUser.email };
@@ -39,11 +40,12 @@ mongoClient.connect(url, (err, db) => {
       //login route
       const currUser = {
         email: req.body.email,
-        password: req.body.password
+        password: req.body.password,
+        userType:req.body.userType
       };
       collection.findOne(currUser, (err, result) => {
         if (result != null) {
-          const responseToClient = { email: result.email };
+          const responseToClient = { email: result.email,userType:req.body.userType };
           res.status(200).send(JSON.stringify(responseToClient));
         } else {
           res.status(404).send();
@@ -60,14 +62,14 @@ mongoClient.connect(url, (err, db) => {
 
       const userRequest = {
         email: req.body.email,
-        location: GPScordinates,
+        gpsCordinates: GPScordinates,
         destination: req.body.destination,
         pickuptime: req.body.pickuptime
       };
       console.log(userRequest.email);
       const updateRequest = {
         $set: {
-          location: userRequest.location,
+          gpsCordinates: userRequest.gpsCordinates,
           destination: userRequest.destination,
           pickuptime: userRequest.pickuptime
         }
@@ -76,11 +78,10 @@ mongoClient.connect(url, (err, db) => {
       const email = { email: userRequest.email };
       const resToClient = {
         email: userRequest.email,
-        gpsCordinates: userRequest.location,
+        gpsCordinates: userRequest.gpsCordinates,
         destination: userRequest.destination,
         pickuptime: userRequest.pickuptime
       };
-
       locationTable.findOne(email, (err, result) => {
         if (result == null) {
           locationTable.insertOne(userRequest, (err, result) => {
@@ -96,6 +97,24 @@ mongoClient.connect(url, (err, db) => {
         } else {
           res.status(400).send();
         }
+      });
+    });
+
+    app.delete("/closeClientRequest/:email",(req,res)=>{ // delete the request of the client by the driver after pickup is done.
+      const email={email: req.params.email}
+      locationTable.deleteOne(email, function(err, obj) {
+        if (err) throw err;
+        console.log("1 document deleted");
+        res.status(200).send();
+      });
+    });
+
+    app.get("/driverNotify", (req, res) => { // get all the client request in an array. 
+      locationTable.find({}).toArray(function(err, result) {
+        if (err) throw err;
+        console.log(result);
+        res.status(200).send(JSON.stringify(result))
+      
       });
     });
   }

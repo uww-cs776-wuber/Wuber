@@ -18,55 +18,65 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 private RetrofitInterface retrofitInterface;
 private Retrofit retrofit;
-private String BASEURL="http://172.23.73.141:3000"; //current IP of machine.
+private String BASEURL= retrofitInterface.BASEURL;
 private EditText txtEmail,txtPassword;
 public String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         retrofit= new Retrofit.Builder().baseUrl(BASEURL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .build(); // Retrofit is used to make requests to the server. GsonConverterFactory method converts JSON to Java Object
+                .build();
+        // Retrofit is used to make requests to the server. GsonConverterFactory method converts JSON to Java Object
 
         retrofitInterface= retrofit.create(RetrofitInterface.class);
         txtEmail=(EditText) findViewById(R.id.emailText);
         txtPassword= (EditText) findViewById(R.id.passwordText);
 
+        final String userType=getIntent().getStringExtra("userType");
+        if(userType.equals("driver")){
+            findViewById(R.id.signUp).setVisibility(View.INVISIBLE);
+        }
 
         //Handle user Login authentication
         findViewById(R.id.signIn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                RestService restService= new RestService();
+                String type="";
                 if (!txtEmail.getText().toString().equals("") && !txtPassword.getText().toString().equals(""))
-                {
-                    HashMap<String,String> hm = new HashMap<>();
+                { HashMap<String,String> hm = new HashMap<>();
                 hm.put("email",txtEmail.getText().toString());
                 hm.put("password",txtPassword.getText().toString());
-
-                Call<Result> call = retrofitInterface.executeLogin(hm); // body of post request to send to nodejs server
-                call.enqueue(new Callback<Result>() { // call the http request.
-                    @Override
-                    public void onResponse(Call<Result> call, Response<Result> response) {
-                        // This function is called when the http request is successful
-                        if(response.code()==200){
-                            Result result= response.body();
-                            Toast.makeText(MainActivity.this,"Welcome "+result.getEmail(),Toast.LENGTH_SHORT).show();
-                            // If login successful then go to user dashboard.
-                            goToDashboard(result.getEmail());
+                hm.put("userType",userType);
+                    Call<Result> call = retrofitInterface.executeLogin(hm); // body of post request to send to nodejs server
+                    call.enqueue(new Callback<Result>() { // call the http request.
+                        @Override
+                        public void onResponse(Call<Result> call, Response<Result> response) {
+                            // This function is called when the http request is successful
+                            if(response.code()==200){
+                                Result result= response.body();
+                                Toast.makeText(MainActivity.this,"Welcome: "+result.getEmail(),Toast.LENGTH_SHORT).show();
+                                if(result.getUserType().equals("driver")) {
+                                  goToDriverDashboard(result.getEmail());
+                                }
+                                else if(result.getUserType().equals("passenger")){
+                                   goToPassengerDashboard(result.getEmail());
+                                }
+                            }
+                            else if(response.code()==404){
+                                Toast.makeText(MainActivity.this,"User not found",Toast.LENGTH_LONG).show();
+                            }
                         }
-                        else if(response.code()==404){
-                            Toast.makeText(MainActivity.this,"User not found",Toast.LENGTH_LONG).show();
+                        @Override
+                        public void onFailure(Call<Result> call, Throwable t) {
+                            // This function is called when the http request fails.
+                             Toast.makeText(MainActivity.this, t.getMessage(),Toast.LENGTH_LONG).show();
                         }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Result> call, Throwable t) {
-                        // This function is called when the http request fails.
-                        Toast.makeText(MainActivity.this, t.getMessage(),Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
+                    });
+                }
             else
                 {
                     Toast.makeText(MainActivity.this,"email and password cannot be blank.",Toast.LENGTH_LONG).show();
@@ -82,9 +92,8 @@ public String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
                     HashMap<String, String> hm = new HashMap<>();
                     hm.put("email", txtEmail.getText().toString());
                     hm.put("password", txtPassword.getText().toString());
-
+                    hm.put("userType",userType);
                     Call<Void> call = retrofitInterface.executeSignup(hm);
-
                     call.enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
@@ -110,9 +119,16 @@ public String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
 
     // Passing email id of logged in user from MainActivity.class to PassengerDashboard.class
-    public void goToDashboard(String email){
+    public void goToPassengerDashboard(String email){
         txtPassword.setText("");
         Intent intent = new Intent(MainActivity.this, PassengerDashboard.class);
+        intent.putExtra("welcome", email);
+        startActivity(intent);
+    }
+
+    public void goToDriverDashboard(String email){
+        txtPassword.setText("");
+        Intent intent = new Intent(MainActivity.this, DriverDash.class);
         intent.putExtra("welcome", email);
         startActivity(intent);
     }
