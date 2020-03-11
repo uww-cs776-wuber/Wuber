@@ -37,14 +37,14 @@ public String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
         final String userType=getIntent().getStringExtra("userType");
         if(userType.equals("driver")){
-            findViewById(R.id.signUp).setVisibility(View.INVISIBLE);
+           // findViewById(R.id.signUp).setVisibility(View.INVISIBLE);
         }
 
         //Handle user Login authentication
         findViewById(R.id.signIn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RestService restService= new RestService();
+
                 String type="";
                 if (!txtEmail.getText().toString().equals("") && !txtPassword.getText().toString().equals(""))
                 { HashMap<String,String> hm = new HashMap<>();
