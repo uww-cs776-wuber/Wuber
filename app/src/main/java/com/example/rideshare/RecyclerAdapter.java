@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
@@ -24,21 +25,22 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RequestViewHolder> {
     public RetrofitInterface retrofitInterface;
     public Retrofit retrofit;
-    String request[];
-    String location[];
-    String destination[];
-    String email[];
+    String request[],location[],destination[],email[],pickup[];
     Context context;
+    String driverLocation, username;
     String BASEURL = retrofitInterface.BASEURL;
 
 
 
-    public  RecyclerAdapter(Context ct, String req[], String em[], String loc[], String des[]){
+    public  RecyclerAdapter(Context ct, String req[], String em[], String loc[], String des[], String pick[], String drvLoc, String user){
         context=ct;
         request=req;
         location=loc;
         destination=des;
         email=em;
+        pickup=pick;
+        driverLocation=drvLoc;
+        username=user;
     }
     @NonNull
     @Override
@@ -61,6 +63,32 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
                 context.startActivity(mapIntent);
+
+                HashMap<String,String> takePassenger= new HashMap<>();
+                takePassenger.put("email",email[i]);
+                takePassenger.put("gpsCordinates",location[i]);
+                takePassenger.put("destination",destination[i]);
+                takePassenger.put("pickuptime",pickup[i]);
+                takePassenger.put("driver",username);
+                takePassenger.put("driverLocation",driverLocation);
+                Call<Result> call = retrofitInterface.executeTakeRequest(takePassenger);
+                call.enqueue(new Callback<Result>() {
+                    @Override
+                    public void onResponse(Call<Result> call, Response<Result> response) {
+                        if (response.code() == 200) {
+                            Result result= response.body();
+                            Toast.makeText(context, result.getEmail()+" "+result.getPickupTime(), Toast.LENGTH_LONG).show();
+                        } else if (response.code() == 400) {
+                            Toast.makeText(context, "Request Failed", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Result> call, Throwable t) {
+                        Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+
             }
         });
         requestViewHolder.driverLocation.setOnClickListener(new View.OnClickListener() {

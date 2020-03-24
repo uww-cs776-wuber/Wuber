@@ -2,6 +2,8 @@ package com.example.rideshare;
 
 public class Result {
     private String userType;
+    private String driver;
+    private String driverLocation;
     private String email;
     private String gpsCordinates;
     private String pickuptime;
@@ -17,4 +19,6 @@ public class Result {
         return pickuptime;
     }
     public String getUserType() { return userType; }
+    public String getDriver() { return driver; }
+    public String getDriverLocation() { return driverLocation; }
 }

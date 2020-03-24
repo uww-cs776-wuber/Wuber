@@ -22,6 +22,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,13 +40,15 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class PassengerDashboard extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener {
+public class PassengerDashboard extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, Runnable {
     public FirebaseLoginSignup auth = new FirebaseLoginSignup();
     private LocationManager locationManager;
     private LocationListener locationListener;
     public TextView locationTxt;
     String username;
+    private Thread worker;
 
+    private final AtomicBoolean running = new AtomicBoolean(false); // boolean flag for Passenger details Thread
     private RetrofitInterface retrofitInterface;
     private String BASEURL= retrofitInterface.BASEURL;
     private Retrofit retrofit;
@@ -65,14 +69,15 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         final TextView timeTxt=(TextView) findViewById(R.id.timeTxt);
 
         username = getIntent().getStringExtra("welcome"); // get email from MainActivity
-        String splitDomain[]=username.split("@");
-        usernameTxt.setText(splitDomain[0]);
+        //String splitDomain[]=username.split("@");
+        usernameTxt.setText(username);
 
         locationTxt=(TextView)findViewById(R.id.location) ;
         findViewById(R.id.maplocation).setVisibility(View.INVISIBLE);
 
         final EditText destinationTxt=(EditText) findViewById(R.id.destinationTxt);
 
+        start(); // start the get passenger request thread. This thread executes every 30 seconds
         //location service
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -214,5 +219,52 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         TextView timeTxt=(TextView) findViewById(R.id.timeTxt);
         timeTxt.setText(hourOfDay+":"+minute);
+    }
+
+    public void start() { //function to start the thread
+        worker = new Thread(this);
+        worker.start();
+    }
+
+    public void stop() { // function to stop thread
+        running.set(false);
+    }
+
+    public void interrupt() { // function to interrupt the thread
+        running.set(false);
+        worker.interrupt();
+    }
+    @Override
+    public void run() { // Run the thread.
+        running.set(true);
+        while (running.get()) {
+            try {
+                Thread.sleep(30000);
+            } catch (InterruptedException e){
+                Thread.currentThread().interrupt();
+            }
+            getRequest(); // Get passenger request function.
+        }
+    }
+    public void getRequest(){
+        Call<Result> call = retrofitInterface.executePassengerNotify(username);
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                if (response.code() == 200) {
+                    Result result= response.body();
+                    Toast.makeText(PassengerDashboard.this, result.getDriver()+" "+result.getDriverLocation(), Toast.LENGTH_LONG).show();
+
+                } else if (response.code() == 400) {
+                    Toast.makeText(PassengerDashboard.this, "Error in closing the request", Toast.LENGTH_LONG).show();
+                }
+
+                DriverDash.getInstance().getRequest();
+            }
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                Toast.makeText(PassengerDashboard.this, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

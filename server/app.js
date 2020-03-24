@@ -13,7 +13,7 @@ mongoClient.connect(url, (err, db) => {
     const rideShareDb = db.db("rideShareDb"); // This is the database
     const collection = rideShareDb.collection("user"); // This is the user table
     const locationTable = rideShareDb.collection("locationTable"); // This is the Table for storing everything sent by the passenger while requesting a ride
-  
+    const rideService = rideShareDb.collection("rideService"); // This table stores all the passenger requests accepted by drivers.
 
     app.post("/signup", (req, res) => {
       //signup route
@@ -41,11 +41,14 @@ mongoClient.connect(url, (err, db) => {
       const currUser = {
         email: req.body.email,
         password: req.body.password,
-        userType:req.body.userType
+        userType: req.body.userType
       };
       collection.findOne(currUser, (err, result) => {
         if (result != null) {
-          const responseToClient = { email: result.email,userType:req.body.userType };
+          const responseToClient = {
+            email: result.email,
+            userType: req.body.userType
+          };
           res.status(200).send(JSON.stringify(responseToClient));
         } else {
           res.status(404).send();
@@ -100,8 +103,54 @@ mongoClient.connect(url, (err, db) => {
       });
     });
 
-    app.delete("/closeClientRequest/:email",(req,res)=>{ // delete the request of the client by the driver after pickup is done.
-      const email={email: req.params.email}
+    app.post("/takePassenger", (req, res) => {
+      var GPScordinates = req.body.gpsCordinates
+        .replace("\t", "")
+        .replace("\n", "")
+        .replace("\t", "");
+
+      const userRequest = {
+        email: req.body.email,
+        gpsCordinates: GPScordinates,
+        destination: req.body.destination,
+        pickuptime: req.body.pickuptime,
+        driver: req.body.driver,
+        driverLocation: req.body.driverLocation
+      };
+      console.log(userRequest);
+      const updateRequest = {
+        $set: {
+          gpsCordinates: userRequest.gpsCordinates,
+          destination: userRequest.destination,
+          pickuptime: userRequest.pickuptime,
+          driver: req.body.driver,
+          driverLocation: req.body.driverLocation
+        }
+      };
+
+      const email = { email: userRequest.email };
+
+      rideService.findOne(email, (err, result) => {
+        if (result == null) {
+          rideService.insertOne(userRequest, (err, result) => {
+            console.log("user request added!");
+            res.status(200).send(JSON.stringify("Ride in progress")); // Insert for user request
+          });
+        } else if (result != null) {
+          locationTable.updateOne(email, updateRequest, (err, result) => {
+            console.log("user request update!");
+            console.log(userRequest);
+            res.status(200).send(JSON.stringify(userRequest)); // Update the user request for user
+          });
+        } else {
+          res.status(400).send();
+        }
+      });
+    });
+
+    app.delete("/closeClientRequest/:email", (req, res) => {
+      // delete the request of the client by the driver after pickup is done.
+      const email = { email: req.params.email };
       locationTable.deleteOne(email, function(err, obj) {
         if (err) throw err;
         console.log("1 document deleted");
@@ -109,12 +158,32 @@ mongoClient.connect(url, (err, db) => {
       });
     });
 
-    app.get("/driverNotify", (req, res) => { // get all the client request in an array. 
+    app.get("/driverNotify", (req, res) => {
+      // get all the client request in an array.
       locationTable.find({}).toArray(function(err, result) {
         if (err) throw err;
         console.log(result);
-        res.status(200).send(JSON.stringify(result))
-      
+        res.status(200).send(JSON.stringify(result));
+      });
+    });
+
+    app.get("/passengerNotify/:email", (req, res) => {
+      // get all the client request in an array.
+      const email={email: req.params.email}
+      rideService.findOne(email, (err, result) => {
+        if (result != null) {
+          const responseToClient = {
+            email: result.email,
+            gpsCordinates: result.gpsCordinates,
+            destination: result.destination,
+            pickuptime: result.pickuptime,
+            driver: result.driver,
+            driverLocation: result.driverLocation
+          };
+          res.status(200).send(JSON.stringify(responseToClient));
+        } else {
+          res.status(404).send();
+        }
       });
     });
   }
