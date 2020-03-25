@@ -70,15 +70,14 @@ public class DriverDash extends AppCompatActivity implements Runnable {
         setContentView(R.layout.activity_driver_dash);
         username = getIntent().getStringExtra("welcome"); // get email from MainActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("hello");
-
         //String splitDomain[]=username.split("@");
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+        View headerView = navigationView.getHeaderView(0);
+        // Setting the driver email ID to nav header.
+        TextView navUsername = (TextView) headerView.findViewById(R.id.NavHeader);
+        navUsername.setText(username);
+
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send)

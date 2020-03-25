@@ -94,7 +94,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
         requestViewHolder.driverLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // restService.deleteClientRequest(email[i]);
                 Uri gmmIntentUri = Uri.parse("google.navigation:q="+destination[i]);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");

@@ -12,7 +12,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface RetrofitInterface {
-    String BASEURL="http://192.168.1.60:3000";
+    String BASEURL="http://192.168.1.8:3000";
     @POST("/login")
     Call<Result> executeLogin(@Body HashMap<String,String> map);
     @POST("/signup")
@@ -23,7 +23,7 @@ public interface RetrofitInterface {
     Call<Result> executeTakeRequest(@Body HashMap<String,String> map);
     @GET("/driverNotify")
     Call<List<Result>> executeDriverNotify();
-    @GET("/passengerNotify")
+    @GET("/passengerNotify/{email}")
     Call <Result> executePassengerNotify(@Path("email") String email);
     @DELETE("/closeClientRequest/{email}")
     Call<Void> executeCloseRequest(@Path("email") String email);

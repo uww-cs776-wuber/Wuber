@@ -41,17 +41,18 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PassengerDashboard extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, Runnable {
-    public FirebaseLoginSignup auth = new FirebaseLoginSignup();
+   // public FirebaseLoginSignup auth = new FirebaseLoginSignup();
     private LocationManager locationManager;
     private LocationListener locationListener;
     public TextView locationTxt;
-    String username;
+    String username, mapDriverLocation="";
     private Thread worker;
 
     private final AtomicBoolean running = new AtomicBoolean(false); // boolean flag for Passenger details Thread
     private RetrofitInterface retrofitInterface;
     private String BASEURL= retrofitInterface.BASEURL;
     private Retrofit retrofit;
+    public TextView driverInfo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +64,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
 
         retrofitInterface= retrofit.create(RetrofitInterface.class);
 
-        auth.mAuth = FirebaseAuth.getInstance(); // Firebase reference not used now.
+      //  auth.mAuth = FirebaseAuth.getInstance(); // Firebase reference not used now.
 
         TextView usernameTxt = (TextView) findViewById(R.id.username);
         final TextView timeTxt=(TextView) findViewById(R.id.timeTxt);
@@ -73,8 +74,9 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         usernameTxt.setText(username);
 
         locationTxt=(TextView)findViewById(R.id.location) ;
-        findViewById(R.id.maplocation).setVisibility(View.INVISIBLE);
-
+        if(mapDriverLocation.equals("")) {
+            findViewById(R.id.maplocation).setVisibility(View.INVISIBLE);
+        }
         final EditText destinationTxt=(EditText) findViewById(R.id.destinationTxt);
 
         start(); // start the get passenger request thread. This thread executes every 30 seconds
@@ -177,14 +179,14 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     }
 
     public void mapLocation(View view) {
-        if (!locationTxt.getText().toString().equals("")) {
+        if (!mapDriverLocation.equals("")) {
             Uri gmmIntentUri = Uri.parse("geo:"+locationTxt.getText().toString());
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             mapIntent.setPackage("com.google.android.apps.maps");
             startActivity(mapIntent);
         }
         else{
-            Toast.makeText(PassengerDashboard.this,"Location field blank",Toast.LENGTH_LONG).show();
+            Toast.makeText(PassengerDashboard.this,"Driver location field is blank",Toast.LENGTH_LONG).show();
         }
     }
     @Override
@@ -247,6 +249,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         }
     }
     public void getRequest(){
+        driverInfo= findViewById(R.id.driverInfo);
         Call<Result> call = retrofitInterface.executePassengerNotify(username);
         call.enqueue(new Callback<Result>() {
             @Override
@@ -254,7 +257,8 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                 if (response.code() == 200) {
                     Result result= response.body();
                     Toast.makeText(PassengerDashboard.this, result.getDriver()+" "+result.getDriverLocation(), Toast.LENGTH_LONG).show();
-
+                    driverInfo.setText("Driver :"+result.getDriver()+"\n"+"Location: "+result.getDriverLocation());
+                    mapDriverLocation=result.getDriverLocation();
                 } else if (response.code() == 400) {
                     Toast.makeText(PassengerDashboard.this, "Error in closing the request", Toast.LENGTH_LONG).show();
                 }
