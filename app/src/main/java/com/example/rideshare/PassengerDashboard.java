@@ -52,7 +52,8 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     private RetrofitInterface retrofitInterface;
     private String BASEURL= retrofitInterface.BASEURL;
     private Retrofit retrofit;
-    public TextView driverInfo;
+    public TextView driverUsername;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,13 +73,11 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         username = getIntent().getStringExtra("welcome"); // get email from MainActivity
         //String splitDomain[]=username.split("@");
         usernameTxt.setText(username);
-
+        findViewById(R.id.driverInfo).setVisibility(View.INVISIBLE);
         locationTxt=(TextView)findViewById(R.id.location) ;
-        if(mapDriverLocation.equals("")) {
-            findViewById(R.id.maplocation).setVisibility(View.INVISIBLE);
-        }
-        final EditText destinationTxt=(EditText) findViewById(R.id.destinationTxt);
 
+        final EditText destinationTxt=(EditText) findViewById(R.id.destinationTxt);
+        getRequest();
         start(); // start the get passenger request thread. This thread executes every 30 seconds
         //location service
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -156,6 +155,10 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
             }
 
         });
+
+//        if(driverLocation.getText().toString().equals("")) {
+
+//        }
     }
 
     @Override
@@ -178,15 +181,40 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         }
     }
 
+    public void driverNotifier(String drivername,String title){
+        String user[]=username.split("@");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "notify_001")
+                .setSmallIcon(R.drawable.ic_ride)
+                .setContentTitle("Hey "+user[0]+ " "+title)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText("Your driver for today is "+drivername+".\nClick the Map button on your dashboard to view the driver's location.")).setAutoCancel(true);
+
+        NotificationManager
+                mNotificationManager =
+                (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            String channelId = "Your_channel_id";
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_HIGH);
+            mNotificationManager.createNotificationChannel(channel);
+            builder.setChannelId(channelId);
+        }
+        mNotificationManager.notify(0, builder.build());
+
+    }
     public void mapLocation(View view) {
         if (!mapDriverLocation.equals("")) {
-            Uri gmmIntentUri = Uri.parse("geo:"+locationTxt.getText().toString());
+            Uri gmmIntentUri = Uri.parse("geo:"+mapDriverLocation);
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             mapIntent.setPackage("com.google.android.apps.maps");
             startActivity(mapIntent);
         }
         else{
-            Toast.makeText(PassengerDashboard.this,"Driver location field is blank",Toast.LENGTH_LONG).show();
+            Toast.makeText(PassengerDashboard.this,"Sorry the driver is not here. You will be notified once the driver is here to get you.",Toast.LENGTH_LONG).show();
         }
     }
     @Override
@@ -200,6 +228,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                        // auth.mAuth.signOut();
+                        interrupt();
                         Intent a = new Intent(Intent.ACTION_MAIN);
                         a.addCategory(Intent.CATEGORY_HOME);
                         a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -249,7 +278,8 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         }
     }
     public void getRequest(){
-        driverInfo= findViewById(R.id.driverInfo);
+        driverUsername= findViewById(R.id.driverInfo);
+
         Call<Result> call = retrofitInterface.executePassengerNotify(username);
         call.enqueue(new Callback<Result>() {
             @Override
@@ -257,13 +287,19 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                 if (response.code() == 200) {
                     Result result= response.body();
                     Toast.makeText(PassengerDashboard.this, result.getDriver()+" "+result.getDriverLocation(), Toast.LENGTH_LONG).show();
-                    driverInfo.setText("Driver :"+result.getDriver()+"\n"+"Location: "+result.getDriverLocation());
+                    if(result.getArrived().equals("yes")){
+                    driverUsername.setText("Driver :"+result.getDriver()+"\n"+"Location: "+result.getDriverLocation());
                     mapDriverLocation=result.getDriverLocation();
+                    driverNotifier(result.getDriver(),"your ride is here!");
+                    }
+                    else if(result.getArrived().equals("no")) {
+                        driverNotifier(result.getDriver(),"your ride will be here shortly.");
+                    }
                 } else if (response.code() == 400) {
                     Toast.makeText(PassengerDashboard.this, "Error in closing the request", Toast.LENGTH_LONG).show();
                 }
 
-                DriverDash.getInstance().getRequest();
+             //   DriverDash.getInstance().getRequest();
             }
             @Override
             public void onFailure(Call<Result> call, Throwable t) {

@@ -8,17 +8,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -53,8 +57,10 @@ public class DriverDash extends AppCompatActivity implements Runnable {
     private Retrofit retrofit;
     private String BASEURL= retrofitInterface.BASEURL;
     private Thread worker;
+
     private final AtomicBoolean running = new AtomicBoolean(false); // boolean flag for Passenger details Thread
     RecyclerView recyclerView;
+    TextView navHeader, navLocation;
     public  static DriverDash driverDash;
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -67,17 +73,20 @@ public class DriverDash extends AppCompatActivity implements Runnable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         driverDash=this;
+        username=getIntent().getStringExtra("welcome");
         setContentView(R.layout.activity_driver_dash);
-        username = getIntent().getStringExtra("welcome"); // get email from MainActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
-        //String splitDomain[]=username.split("@");
+        setSupportActionBar(toolbar);
+
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
-        View headerView = navigationView.getHeaderView(0);
-        // Setting the driver email ID to nav header.
-        TextView navUsername = (TextView) headerView.findViewById(R.id.NavHeader);
-        navUsername.setText(username);
-
+        View header=navigationView.getHeaderView(0);
+        navHeader = (TextView)header.findViewById(R.id.NavHeader);
+        navLocation = (TextView)header.findViewById(R.id.NavLocation);
+        navHeader.setText(username);
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send)
@@ -90,21 +99,20 @@ public class DriverDash extends AppCompatActivity implements Runnable {
         retrofit= new Retrofit.Builder().baseUrl(BASEURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build(); // Retrofit is used to make http requests to the server. GsonConverterFactory method converts JSON to Java Object
-         recyclerView= (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView= (RecyclerView) findViewById(R.id.recyclerView);
         retrofitInterface= retrofit.create(RetrofitInterface.class);
 
         getRequest(); // Get details of all passenger request on recycler view
 
         start(); // start the get passenger request thread. This thread executes every 30 seconds
-
         //Location service to get GPS location of driver
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-              //  locationTxt.setText( "\t"+location.getLatitude() + ",\n\t" + location.getLongitude());
                 driverLocation=location.getLatitude()+","+location.getLongitude();
-                Toast.makeText(DriverDash.this, driverLocation, Toast.LENGTH_LONG).show();
+                navLocation.setText("\nGPS : "+driverLocation);
+              //  Toast.makeText(DriverDash.this, driverLocation, Toast.LENGTH_LONG).show();
             }
 
             @Override

@@ -115,7 +115,8 @@ mongoClient.connect(url, (err, db) => {
         destination: req.body.destination,
         pickuptime: req.body.pickuptime,
         driver: req.body.driver,
-        driverLocation: req.body.driverLocation
+        driverLocation: req.body.driverLocation,
+        arrived:req.body.arrived
       };
       console.log(userRequest);
       const updateRequest = {
@@ -124,7 +125,8 @@ mongoClient.connect(url, (err, db) => {
           destination: userRequest.destination,
           pickuptime: userRequest.pickuptime,
           driver: req.body.driver,
-          driverLocation: req.body.driverLocation
+          driverLocation: req.body.driverLocation,
+          arrived:req.body.arrived
         }
       };
 
@@ -137,7 +139,7 @@ mongoClient.connect(url, (err, db) => {
             res.status(200).send(JSON.stringify("Ride in progress")); // Insert for user request
           });
         } else if (result != null) {
-          locationTable.updateOne(email, updateRequest, (err, result) => {
+          rideService.updateOne(email, updateRequest, (err, result) => {
             console.log("user request update!");
             console.log(userRequest);
             res.status(200).send(JSON.stringify(userRequest)); // Update the user request for user
@@ -178,8 +180,10 @@ mongoClient.connect(url, (err, db) => {
             destination: result.destination,
             pickuptime: result.pickuptime,
             driver: result.driver,
-            driverLocation: result.driverLocation
+            driverLocation: result.driverLocation,
+            arrived:result.arrived
           };
+          console.log(result)
           res.status(200).send(JSON.stringify(responseToClient));
         } else {
           res.status(404).send();

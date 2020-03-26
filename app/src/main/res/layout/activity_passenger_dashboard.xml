@@ -52,15 +52,14 @@
         android:id="@+id/maplocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="128dp"
+        android:layout_marginBottom="156dp"
+        android:background="@color/colorPrimary"
         android:onClick="mapLocation"
         android:text="Map"
-        android:textSize="12sp"
         android:textColor="#fff"
-        android:background="@color/colorPrimary"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -69,30 +68,27 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginLeft="40dp"
-        android:layout_marginBottom="364dp"
+        android:layout_marginTop="16dp"
         android:text="Your\nLocation:"
         android:textColor="#000"
         android:textSize="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/maplocation"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
-        app:layout_constraintVertical_bias="0.435" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <Button
         android:id="@+id/requestRide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="162dp"
-        android:layout_marginLeft="162dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginEnd="161dp"
-        android:layout_marginRight="161dp"
+        android:layout_marginStart="260dp"
+        android:layout_marginLeft="260dp"
+        android:layout_marginTop="224dp"
+        android:layout_marginEnd="260dp"
+        android:layout_marginRight="260dp"
         android:background="#2874A6"
         android:text="Request Ride"
         android:textColor="#fff"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/destinationTxt" />
 
@@ -170,11 +166,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="171dp"
         android:layout_marginLeft="171dp"
-        android:layout_marginTop="69dp"
-        android:layout_marginEnd="182dp"
-        android:layout_marginRight="182dp"
-
+        android:layout_marginEnd="171dp"
+        android:layout_marginRight="171dp"
+        android:layout_marginBottom="85dp"
+        android:text="Driver Info"
+        android:textSize="20dp"
+        android:textColor="#000"
+        app:layout_constraintBottom_toTopOf="@+id/maplocation"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/requestRide" />
+        app:layout_constraintStart_toStartOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

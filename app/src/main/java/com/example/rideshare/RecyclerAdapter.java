@@ -2,8 +2,10 @@ package com.example.rideshare;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +49,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
     public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater layoutInflater=LayoutInflater.from(context);
         View view=layoutInflater.inflate(R.layout.request_row,viewGroup,false);
+
         return new RequestViewHolder(view);
 
     }
@@ -54,50 +57,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
     @Override
     public void onBindViewHolder(@NonNull RequestViewHolder requestViewHolder,  final int i) {
 
-
+        if(!username.equals("")){
+         //   requestViewHolder.request_card.setBackgroundColor(Color.parseColor("#000000"));
+        }
         requestViewHolder.requestDetails.setText(request[i]);
         requestViewHolder.mapLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri gmmIntentUri = Uri.parse("google.navigation:q="+location[i]);
-                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                mapIntent.setPackage("com.google.android.apps.maps");
-                context.startActivity(mapIntent);
-
-                HashMap<String,String> takePassenger= new HashMap<>();
-                takePassenger.put("email",email[i]);
-                takePassenger.put("gpsCordinates",location[i]);
-                takePassenger.put("destination",destination[i]);
-                takePassenger.put("pickuptime",pickup[i]);
-                takePassenger.put("driver",username);
-                takePassenger.put("driverLocation",driverLocation);
-                Call<Result> call = retrofitInterface.executeTakeRequest(takePassenger);
-                call.enqueue(new Callback<Result>() {
-                    @Override
-                    public void onResponse(Call<Result> call, Response<Result> response) {
-                        if (response.code() == 200) {
-                            Result result= response.body();
-                            Toast.makeText(context, result.getEmail()+" "+result.getPickupTime(), Toast.LENGTH_LONG).show();
-                        } else if (response.code() == 400) {
-                            Toast.makeText(context, "Request Failed", Toast.LENGTH_LONG).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Result> call, Throwable t) {
-                        Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
+                rideService(email[i],location[i],destination[i],pickup[i],username,driverLocation,"no");
             }
         });
         requestViewHolder.driverLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri gmmIntentUri = Uri.parse("google.navigation:q="+destination[i]);
-                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                mapIntent.setPackage("com.google.android.apps.maps");
-                context.startActivity(mapIntent);
+                rideService(email[i],location[i],destination[i],pickup[i],username,driverLocation,"yes");
             }
         });
 
@@ -130,6 +103,45 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
         });
             }
         });
+
+    }
+    public void rideService(String email,String location,String destination, String pickup, String username, String driverLocation, String arrived){
+
+       if(arrived.equals("yes")) {
+
+        location=destination;
+       }
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + location);
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        context.startActivity(mapIntent);
+
+        HashMap<String,String> takePassenger= new HashMap<>();
+        takePassenger.put("email",email);
+        takePassenger.put("gpsCordinates",location);
+        takePassenger.put("destination",destination);
+        takePassenger.put("pickuptime",pickup);
+        takePassenger.put("driver",username);
+        takePassenger.put("driverLocation",driverLocation);
+        takePassenger.put("arrived",arrived);
+        Call<Result> call = retrofitInterface.executeTakeRequest(takePassenger);
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                if (response.code() == 200) {
+                    Result result= response.body();
+                    Toast.makeText(context, result.getEmail()+" "+result.getPickupTime(), Toast.LENGTH_LONG).show();
+                } else if (response.code() == 400) {
+                    Toast.makeText(context, "Request Failed", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
     @Override
@@ -141,6 +153,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
         TextView requestDetails;
         ImageView clientImage;
         ImageButton mapLocation, close, driverLocation;
+        ConstraintLayout request_card;
 
         public RequestViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -149,6 +162,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
             mapLocation=itemView.findViewById(R.id.map);
             close=itemView.findViewById(R.id.close);
             driverLocation=itemView.findViewById(R.id.driverLocation);
+            request_card=itemView.findViewById(R.id.request_card);
         }
     }
 }

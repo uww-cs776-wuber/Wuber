@@ -7,6 +7,7 @@ public class Result {
     private String email;
     private String gpsCordinates;
     private String pickuptime;
+    private String arrived;
     public String getEmail() {
         return email;
     }
@@ -21,4 +22,5 @@ public class Result {
     public String getUserType() { return userType; }
     public String getDriver() { return driver; }
     public String getDriverLocation() { return driverLocation; }
+    public String getArrived() { return arrived; }
 }

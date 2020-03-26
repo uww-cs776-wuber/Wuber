@@ -12,7 +12,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface RetrofitInterface {
-    String BASEURL="http://192.168.1.8:3000";
+    String BASEURL="http://192.168.1.94:3000";
     @POST("/login")
     Call<Result> executeLogin(@Body HashMap<String,String> map);
     @POST("/signup")
