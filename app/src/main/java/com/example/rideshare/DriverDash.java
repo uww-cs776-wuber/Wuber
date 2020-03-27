@@ -112,7 +112,6 @@ public class DriverDash extends AppCompatActivity implements Runnable {
             public void onLocationChanged(Location location) {
                 driverLocation=location.getLatitude()+","+location.getLongitude();
                 navLocation.setText("\nGPS : "+driverLocation);
-              //  Toast.makeText(DriverDash.this, driverLocation, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -192,7 +191,7 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                         i++;
                         rideNotificaton(result.getEmail(),result.getGpsCordinates(),result.getDestination(),result.getPickupTime());
                     }
-                    RecyclerAdapter recyclerAdapter= new RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray, pickupArray,driverLocation,username);
+                    RecyclerAdapter recyclerAdapter= new RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray, pickupArray,username);
 
                     recyclerView.setAdapter(recyclerAdapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(DriverDash.this));

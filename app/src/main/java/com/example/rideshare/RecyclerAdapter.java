@@ -29,19 +29,19 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
     public Retrofit retrofit;
     String request[],location[],destination[],email[],pickup[];
     Context context;
-    String driverLocation, username;
+    String username="";
     String BASEURL = retrofitInterface.BASEURL;
+    String toastTitle="";
 
 
 
-    public  RecyclerAdapter(Context ct, String req[], String em[], String loc[], String des[], String pick[], String drvLoc, String user){
+    public  RecyclerAdapter(Context ct, String req[], String em[], String loc[], String des[], String pick[],String user){
         context=ct;
         request=req;
         location=loc;
         destination=des;
         email=em;
         pickup=pick;
-        driverLocation=drvLoc;
         username=user;
     }
     @NonNull
@@ -64,13 +64,21 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
         requestViewHolder.mapLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                rideService(email[i],location[i],destination[i],pickup[i],username,driverLocation,"no");
+            //    Toast.makeText(context,DriverDash.getInstance().driverLocation,Toast.LENGTH_LONG).show();
+                if(!DriverDash.getInstance().driverLocation.equals(""))
+                     rideService(email[i],location[i],destination[i],pickup[i],username,DriverDash.getInstance().driverLocation,"no");
+                else
+                    Toast.makeText(context,"You do not have your GPS location available at the moment. \nPlease drag the nav bar to check if your GPS location is available.",Toast.LENGTH_LONG).show();
             }
         });
         requestViewHolder.driverLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                rideService(email[i],location[i],destination[i],pickup[i],username,driverLocation,"yes");
+                if(!DriverDash.getInstance().driverLocation.equals(""))
+                    rideService(email[i],location[i],destination[i],pickup[i],username,DriverDash.getInstance().driverLocation,"yes");
+                else
+                    Toast.makeText(context,"You do not have your GPS location available at the moment.\nPlease drag the nav bar to check if your GPS location is available.",Toast.LENGTH_LONG).show();
+
             }
         });
 
@@ -105,10 +113,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
         });
 
     }
-    public void rideService(String email,String location,String destination, String pickup, String username, String driverLocation, String arrived){
+    public void rideService(String email, String location, String destination, String pickup, String username, String driverLocation, final String arrived){
 
        if(arrived.equals("yes")) {
-
         location=destination;
        }
         Uri gmmIntentUri = Uri.parse("google.navigation:q=" + location);
@@ -130,7 +137,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
             public void onResponse(Call<Result> call, Response<Result> response) {
                 if (response.code() == 200) {
                     Result result= response.body();
-                    Toast.makeText(context, result.getEmail()+" "+result.getPickupTime(), Toast.LENGTH_LONG).show();
+                    if(result.getArrived().equals("no"))
+                        Toast.makeText(context, "Ride request for "+result.getEmail()+" accepted. \nPickup time: "+result.getPickupTime(), Toast.LENGTH_LONG).show();
+                    else if(result.getArrived().equals("yes"))
+                        Toast.makeText(context, "Notifying "+result.getEmail()+" of your arrival. \nYour location has been shared to the passenger", Toast.LENGTH_LONG).show();
                 } else if (response.code() == 400) {
                     Toast.makeText(context, "Request Failed", Toast.LENGTH_LONG).show();
                 }

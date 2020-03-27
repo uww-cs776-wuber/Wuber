@@ -158,6 +158,12 @@ mongoClient.connect(url, (err, db) => {
         console.log("1 document deleted");
         res.status(200).send();
       });
+      rideService.deleteOne(email, function(err, obj) {
+        if (err) throw err;
+        console.log("1 document deleted");
+        res.status(200).send();
+      });
+      
     });
 
     app.get("/driverNotify", (req, res) => {
