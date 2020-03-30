@@ -130,15 +130,16 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                // This above try/catch part is for the security part only so SoftwareEngineering class do not need to care for this
 
                 if(!locationTxt.getText().toString().equals("") && !timeTxt.getText().toString().equals("") && !destinationTxt.getText().toString().equals("")){
 
                     // Send ride request by client to server and receive response from server
                     HashMap<String,String> clientRequest= new HashMap<>();
-                    clientRequest.put("email",EncryptedEmail);
-                    clientRequest.put("destination",EncryptedUserDestination);
-                    clientRequest.put("gpsCordinates",EncryptedUserLocation);
-                    clientRequest.put("pickuptime",EncryptedPickupTime);
+                    clientRequest.put("email",username);
+                    clientRequest.put("destination",destinationTxt.getText().toString());
+                    clientRequest.put("gpsCordinates",locationTxt.getText().toString());
+                    clientRequest.put("pickuptime",timeTxt.getText().toString());
 
                     Call<Result> call = retrofitInterface.executeClientRequest(clientRequest);
                     call.enqueue(new Callback<Result>() {
@@ -302,10 +303,10 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                     if(result.getArrived().equals("yes")){
                     driverUsername.setText("Driver :"+result.getDriver()+"\n"+"Location: "+result.getDriverLocation());
                     mapDriverLocation=result.getDriverLocation();
-                    driverNotifier(result.getDriver(),"your ride is here!");
+                  //  driverNotifier(result.getDriver(),"your ride is here!");
                     }
                     else if(result.getArrived().equals("no")) {
-                        driverNotifier(result.getDriver(),"your ride will be here shortly.");
+                     //   driverNotifier(result.getDriver(),"your ride will be here shortly.");
                     }
                 } else if (response.code() == 400) {
                     Toast.makeText(PassengerDashboard.this, "Error in closing the request", Toast.LENGTH_LONG).show();

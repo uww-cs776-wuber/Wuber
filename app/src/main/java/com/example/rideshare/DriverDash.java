@@ -69,6 +69,7 @@ public class DriverDash extends AppCompatActivity implements Runnable {
     }
     public String driverLocation="";
     public String username="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
