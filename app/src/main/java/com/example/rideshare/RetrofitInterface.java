@@ -25,6 +25,8 @@ public interface RetrofitInterface {
     Call<List<Result>> executeDriverNotify();
     @GET("/passengerNotify/{email}")
     Call <Result> executePassengerNotify(@Path("email") String email);
+    @GET("/pickupInProgress/{driver}")
+    Call <List<Result>> executePickupInProgress(@Path("driver") String email);
     @DELETE("/closeClientRequest/{email}")
     Call<Void> executeCloseRequest(@Path("email") String email);
 

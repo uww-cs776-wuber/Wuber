@@ -44,9 +44,11 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
    // public FirebaseLoginSignup auth = new FirebaseLoginSignup();
     private LocationManager locationManager;
     private LocationListener locationListener;
-    public TextView locationTxt;
+    public TextView locationTxt,timeTxt,usernameTxt;
+    public EditText destinationTxt;
     String username, mapDriverLocation="";
     private Thread worker;
+    public Encryption encryption;
 
     private final AtomicBoolean running = new AtomicBoolean(false); // boolean flag for Passenger details Thread
     private RetrofitInterface retrofitInterface;
@@ -67,16 +69,15 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
 
       //  auth.mAuth = FirebaseAuth.getInstance(); // Firebase reference not used now.
 
-        TextView usernameTxt = (TextView) findViewById(R.id.username);
-        final TextView timeTxt=(TextView) findViewById(R.id.timeTxt);
-
+        usernameTxt = (TextView) findViewById(R.id.username);
+        timeTxt=(TextView) findViewById(R.id.timeTxt);
         username = getIntent().getStringExtra("welcome"); // get email from MainActivity
+        Toast.makeText(PassengerDashboard.this, username,Toast.LENGTH_LONG).show();
         //String splitDomain[]=username.split("@");
         usernameTxt.setText(username);
         findViewById(R.id.driverInfo).setVisibility(View.INVISIBLE);
         locationTxt=(TextView)findViewById(R.id.location) ;
-
-        final EditText destinationTxt=(EditText) findViewById(R.id.destinationTxt);
+        destinationTxt=(EditText) findViewById(R.id.destinationTxt);
         getRequest();
         start(); // start the get passenger request thread. This thread executes every 30 seconds
         //location service
@@ -114,20 +115,30 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
             }
         }
 
-
         // Function to handle Request ride from client
         findViewById(R.id.requestRide).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Encryption encryption = new Encryption();
+                String EncryptedEmail="", EncryptedUserLocation="", EncryptedUserDestination="", EncryptedPickupTime="";
+              // Encrypt all the user request details using Encryption class and its getMessages function
+                try {
+                    EncryptedEmail =encryption.getEncryptedData(username);
+                    EncryptedUserLocation= encryption.getEncryptedData(locationTxt.getText().toString());
+                    EncryptedUserDestination= encryption.getEncryptedData(destinationTxt.getText().toString());
+                    EncryptedPickupTime= encryption.getEncryptedData(timeTxt.getText().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 if(!locationTxt.getText().toString().equals("") && !timeTxt.getText().toString().equals("") && !destinationTxt.getText().toString().equals("")){
 
                     // Send ride request by client to server and receive response from server
                     HashMap<String,String> clientRequest= new HashMap<>();
-                    clientRequest.put("email",username);
-                    clientRequest.put("destination",destinationTxt.getText().toString());
-                    clientRequest.put("gpsCordinates",locationTxt.getText().toString());
-                    clientRequest.put("pickuptime",timeTxt.getText().toString());
+                    clientRequest.put("email",EncryptedEmail);
+                    clientRequest.put("destination",EncryptedUserDestination);
+                    clientRequest.put("gpsCordinates",EncryptedUserLocation);
+                    clientRequest.put("pickuptime",EncryptedPickupTime);
 
                     Call<Result> call = retrofitInterface.executeClientRequest(clientRequest);
                     call.enqueue(new Callback<Result>() {
@@ -160,6 +171,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
 
 //        }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

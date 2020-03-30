@@ -61,6 +61,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
          //   requestViewHolder.request_card.setBackgroundColor(Color.parseColor("#000000"));
         }
         requestViewHolder.requestDetails.setText(request[i]);
+
         requestViewHolder.mapLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

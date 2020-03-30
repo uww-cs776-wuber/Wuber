@@ -104,6 +104,7 @@ mongoClient.connect(url, (err, db) => {
     });
 
     app.post("/takePassenger", (req, res) => {
+      // Route to post the information of the passenger whose request has been accepted by a driver.
       var GPScordinates = req.body.gpsCordinates
         .replace("\t", "")
         .replace("\n", "")
@@ -151,7 +152,7 @@ mongoClient.connect(url, (err, db) => {
     });
 
     app.delete("/closeClientRequest/:email", (req, res) => {
-      // delete the request of the client by the driver after pickup is done.
+      // Route to delete the request of the passenger by the driver after pickup is done.
       const email = { email: req.params.email };
       locationTable.deleteOne(email, function(err, obj) {
         if (err) throw err;
@@ -163,11 +164,10 @@ mongoClient.connect(url, (err, db) => {
         console.log("1 document deleted");
         res.status(200).send();
       });
-      
     });
 
     app.get("/driverNotify", (req, res) => {
-      // get all the client request in an array.
+      //Route to get all the client request in an array.
       locationTable.find({}).toArray(function(err, result) {
         if (err) throw err;
         console.log(result);
@@ -176,7 +176,7 @@ mongoClient.connect(url, (err, db) => {
     });
 
     app.get("/passengerNotify/:email", (req, res) => {
-      // get all the client request in an array.
+      // Route to get the driver name and location who has accepted the passenger request.
       const email={email: req.params.email}
       rideService.findOne(email, (err, result) => {
         if (result != null) {
@@ -196,6 +196,27 @@ mongoClient.connect(url, (err, db) => {
         }
       });
     });
+
+    app.get("/pickupInProgress/:driver", (req, res) => {
+      // Route to get only the  ride requests in progess.
+      const driver={driver: req.params.driver}
+      rideService.findOne(driver, (err, result) => {
+        if (result != null) {
+          const responseToClient = {
+            email: result.email,
+            gpsCordinates: result.gpsCordinates,
+            destination: result.destination,
+            pickuptime: result.pickuptime
+          };
+          console.log("Ride in Progress")
+          console.log(result)
+          res.status(200).send(JSON.stringify(responseToClient));
+        } else {
+          res.status(404).send();
+        }
+      });
+    });
+
   }
 });
 

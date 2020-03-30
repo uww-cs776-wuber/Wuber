@@ -163,8 +163,49 @@ public class DriverDash extends AppCompatActivity implements Runnable {
     }
 
     public void getRequest(){
-
         Call<List<Result>> call = retrofitInterface.executeDriverNotify();
+        call.enqueue(new Callback<List<Result>>() {
+            @Override
+            public void onResponse(Call<List<Result>> call, Response<List<Result>> response) {
+                String displayRequest="";
+                if (response.code() == 200) {
+                    List<Result> results= response.body();
+                    String reqArray[]=new String[results.size()];
+                    String locationArray[]= new String[results.size()];
+                    String destinationArray[]= new String[results.size()];
+                    String emailArray[]= new String[results.size()];
+                    String pickupArray[]= new String[results.size()];
+                    int i=0;
+                    for(Result result: results){
+                        displayRequest="";
+                        displayRequest+="Passenger: "+result.getEmail()+"\n";
+                        displayRequest+="Location: "+result.getGpsCordinates()+"\n";
+                        displayRequest+="Destination: "+result.getDestination()+"\n";
+                        displayRequest+="Pickup Time: "+result.getPickupTime()+"\n";
+                        reqArray[i]= displayRequest;
+                        emailArray[i]=result.getEmail();
+                        locationArray[i]= result.getGpsCordinates();
+                        destinationArray[i]= result.getDestination();
+                        pickupArray[i]= result.getPickupTime();
+                        i++;
+                        //rideNotificaton(result.getEmail(),result.getGpsCordinates(),result.getDestination(),result.getPickupTime());
+                    }
+                    RecyclerAdapter recyclerAdapter= new RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray, pickupArray,username);
+
+                    recyclerView.setAdapter(recyclerAdapter);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(DriverDash.this));
+                } else if (response.code() == 400) {
+                    Toast.makeText(DriverDash.this, "Request Failed", Toast.LENGTH_LONG).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<List<Result>> call, Throwable t) {
+            }
+        });
+        getRideInProgress();
+    }
+    public void getRideInProgress(){
+        Call<List<Result>>  call = retrofitInterface.executePickupInProgress(username);
         call.enqueue(new Callback<List<Result>>() {
             @Override
             public void onResponse(Call<List<Result>> call, Response<List<Result>> response) {
@@ -191,18 +232,20 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                         i++;
                         rideNotificaton(result.getEmail(),result.getGpsCordinates(),result.getDestination(),result.getPickupTime());
                     }
+                    Toast.makeText(DriverDash.this,displayRequest,Toast.LENGTH_LONG).show();
                     RecyclerAdapter recyclerAdapter= new RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray, pickupArray,username);
 
                     recyclerView.setAdapter(recyclerAdapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(DriverDash.this));
                 } else if (response.code() == 400) {
-                    Toast.makeText(DriverDash.this, "Request Failed", Toast.LENGTH_LONG).show();
+                    Toast.makeText(DriverDash.this, "Not Found", Toast.LENGTH_LONG).show();
                 }
             }
             @Override
             public void onFailure(Call<List<Result>> call, Throwable t) {
             }
         });
+
     }
     public void rideNotificaton(String email, String userLocation, String destination, String pickupTime ){
         String username[]=email.split("@");
@@ -288,7 +331,8 @@ public class DriverDash extends AppCompatActivity implements Runnable {
             } catch (InterruptedException e){
                 Thread.currentThread().interrupt();
             }
-            getRequest(); // Get passenger request function.
+            getRequest();
+           // Get passenger request function.
         }
     }
 }
