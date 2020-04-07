@@ -1,6 +1,8 @@
 package com.example.rideshare;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -93,26 +95,45 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
 
             @Override
             public void onClick(View v) {
-            Call<Void> call = retrofitInterface.executeCloseRequest(email[i]);
-            call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.code() == 200) {
-                    Toast.makeText(context, "Ride request done", Toast.LENGTH_LONG).show();
-                } else if (response.code() == 400) {
-                    Toast.makeText(context, "Error in closing the request", Toast.LENGTH_LONG).show();
-                }
-
-                DriverDash.getInstance().getRequest();
-            }
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+            DeleteRequest(i);
             }
         });
 
+    }
+    public void DeleteRequest(final int i){
+
+        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        alertDialog.setTitle("Ride Request Complete");
+        alertDialog.setMessage("By pressing OK you will be terminating the Ride request for this passenger.\nPress outside the dialog to cancel");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        Call<Void> call = retrofitInterface.executeCloseRequest(email[i]);
+                        call.enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                if (response.code() == 200) {
+                                    Toast.makeText(context, "Ride request done", Toast.LENGTH_LONG).show();
+                                } else if (response.code() == 400) {
+                                    Toast.makeText(context, "Error in closing the request", Toast.LENGTH_LONG).show();
+                                }
+
+                                DriverDash.getInstance().getRequest();
+                            }
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        Intent a = new Intent(Intent.ACTION_MAIN);
+                        a.addCategory(Intent.CATEGORY_HOME);
+                        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    }
+                });
+        alertDialog.setCancelable(true);
+        alertDialog.show();
     }
     public void rideService(String email, String location, String destination, String pickup, String username, String driverLocation, final String arrived){
 

@@ -299,14 +299,14 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
             public void onResponse(Call<Result> call, Response<Result> response) {
                 if (response.code() == 200) {
                     Result result= response.body();
-                    Toast.makeText(PassengerDashboard.this, result.getDriver()+" "+result.getDriverLocation(), Toast.LENGTH_LONG).show();
+                  //  Toast.makeText(PassengerDashboard.this, result.getDriver()+" "+result.getDriverLocation(), Toast.LENGTH_LONG).show();
                     if(result.getArrived().equals("yes")){
                     driverUsername.setText("Driver :"+result.getDriver()+"\n"+"Location: "+result.getDriverLocation());
                     mapDriverLocation=result.getDriverLocation();
-                  //  driverNotifier(result.getDriver(),"your ride is here!");
+                   driverNotifier(result.getDriver(),"your ride is here!");
                     }
                     else if(result.getArrived().equals("no")) {
-                     //   driverNotifier(result.getDriver(),"your ride will be here shortly.");
+                        driverNotifier(result.getDriver(),"your ride will be here shortly.");
                     }
                 } else if (response.code() == 400) {
                     Toast.makeText(PassengerDashboard.this, "Error in closing the request", Toast.LENGTH_LONG).show();
