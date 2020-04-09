@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -18,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,18 +24,15 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RequestViewHolder> {
+public class RideRequest_RecyclerAdapter extends RecyclerView.Adapter<RideRequest_RecyclerAdapter.RequestViewHolder> {
     public RetrofitInterface retrofitInterface;
     public Retrofit retrofit;
-    String request[],location[],destination[],email[],pickup[];
+    String request[],location[],destination[],email[],pickup[], driverName[];
     Context context;
     String username="";
     String BASEURL = retrofitInterface.BASEURL;
-    String toastTitle="";
 
-
-
-    public  RecyclerAdapter(Context ct, String req[], String em[], String loc[], String des[], String pick[],String user){
+    public RideRequest_RecyclerAdapter(Context ct, String req[], String em[], String loc[], String des[], String pick[], String user, String driver[]){
         context=ct;
         request=req;
         location=loc;
@@ -45,43 +40,30 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
         email=em;
         pickup=pick;
         username=user;
+        driverName=driver;
     }
+
     @NonNull
     @Override
     public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater layoutInflater=LayoutInflater.from(context);
         View view=layoutInflater.inflate(R.layout.request_row,viewGroup,false);
-
         return new RequestViewHolder(view);
-
     }
 
     @Override
     public void onBindViewHolder(@NonNull RequestViewHolder requestViewHolder,  final int i) {
-
-        if(!username.equals("")){
-         //   requestViewHolder.request_card.setBackgroundColor(Color.parseColor("#000000"));
-        }
-        requestViewHolder.requestDetails.setText(request[i]);
-
+       // requestViewHolder.close.setVisibility(View.INVISIBLE);
+        requestViewHolder.driverLocation.setVisibility(View.INVISIBLE);
+        requestViewHolder.requestDetails.setText(request[i]); // request details of passenger get shown here at requestDetails.
         requestViewHolder.mapLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            //    Toast.makeText(context,DriverDash.getInstance().driverLocation,Toast.LENGTH_LONG).show();
+
                 if(!DriverDash.getInstance().driverLocation.equals(""))
                      rideService(email[i],location[i],destination[i],pickup[i],username,DriverDash.getInstance().driverLocation,"no");
                 else
                     Toast.makeText(context,"You do not have your GPS location available at the moment. \nPlease drag the nav bar to check if your GPS location is available.",Toast.LENGTH_LONG).show();
-            }
-        });
-        requestViewHolder.driverLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!DriverDash.getInstance().driverLocation.equals(""))
-                    rideService(email[i],location[i],destination[i],pickup[i],username,DriverDash.getInstance().driverLocation,"yes");
-                else
-                    Toast.makeText(context,"You do not have your GPS location available at the moment.\nPlease drag the nav bar to check if your GPS location is available.",Toast.LENGTH_LONG).show();
-
             }
         });
 
@@ -91,50 +73,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
 
         retrofitInterface= retrofit.create(RetrofitInterface.class);
 
-        requestViewHolder.close.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-            DeleteRequest(i);
-            }
-        });
 
     }
-    public void DeleteRequest(final int i){
 
-        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-        alertDialog.setTitle("Ride Request Complete");
-        alertDialog.setMessage("By pressing OK you will be terminating the Ride request for this passenger.\nPress outside the dialog to cancel");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        Call<Void> call = retrofitInterface.executeCloseRequest(email[i]);
-                        call.enqueue(new Callback<Void>() {
-                            @Override
-                            public void onResponse(Call<Void> call, Response<Void> response) {
-                                if (response.code() == 200) {
-                                    Toast.makeText(context, "Ride request done", Toast.LENGTH_LONG).show();
-                                } else if (response.code() == 400) {
-                                    Toast.makeText(context, "Error in closing the request", Toast.LENGTH_LONG).show();
-                                }
-
-                                DriverDash.getInstance().getRequest();
-                            }
-                            @Override
-                            public void onFailure(Call<Void> call, Throwable t) {
-                                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        Intent a = new Intent(Intent.ACTION_MAIN);
-                        a.addCategory(Intent.CATEGORY_HOME);
-                        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                    }
-                });
-        alertDialog.setCancelable(true);
-        alertDialog.show();
-    }
     public void rideService(String email, String location, String destination, String pickup, String username, String driverLocation, final String arrived){
 
        if(arrived.equals("yes")) {
@@ -173,6 +115,23 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
                 Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+        Call<Void> delete = retrofitInterface.executeCloseRequest(email);
+        delete.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.code() == 200) {
+                    Toast.makeText(context, "Ride request accepted!", Toast.LENGTH_LONG).show();
+                } else if (response.code() == 400) {
+                    Toast.makeText(context, "Error in accepting the request", Toast.LENGTH_LONG).show();
+                }
+
+                DriverDash.getInstance().getRequest();
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
 
@@ -184,7 +143,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
     public class RequestViewHolder extends  RecyclerView.ViewHolder {
         TextView requestDetails;
         ImageView clientImage;
-        ImageButton mapLocation, close, driverLocation;
+        ImageButton mapLocation, driverLocation;
         ConstraintLayout request_card;
 
         public RequestViewHolder(@NonNull View itemView) {
@@ -192,7 +151,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
             requestDetails=itemView.findViewById(R.id.ClientRequestDetails);
             clientImage=itemView.findViewById(R.id.ClientImage);
             mapLocation=itemView.findViewById(R.id.map);
-            close=itemView.findViewById(R.id.close);
+          //  close=itemView.findViewById(R.id.close);
             driverLocation=itemView.findViewById(R.id.driverLocation);
             request_card=itemView.findViewById(R.id.request_card);
         }

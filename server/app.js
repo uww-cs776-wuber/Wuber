@@ -154,7 +154,7 @@ mongoClient.connect(url, (err, db) => {
     app.delete("/closeClientRequest/:email", (req, res) => {
       // Route to delete the request of the passenger by the driver after pickup is done.
       const email = { email: req.params.email };
-      locationTable.deleteOne(email, function(err, obj) {
+      rideService.deleteOne(email, function(err, obj) {
         if (err) throw err;
         console.log("1 document deleted");
         res.status(200).send();
@@ -199,24 +199,13 @@ mongoClient.connect(url, (err, db) => {
 
     app.get("/pickupInProgress/:driver", (req, res) => {
       // Route to get only the  ride requests in progess.
-      const driver={driver: req.params.driver}
-      rideService.findOne(driver, (err, result) => {
-        if (result != null) {
-          const responseToClient = {
-            email: result.email,
-            gpsCordinates: result.gpsCordinates,
-            destination: result.destination,
-            pickuptime: result.pickuptime
-          };
-          console.log("Ride in Progress")
-          console.log(result)
-          res.status(200).send(JSON.stringify(responseToClient));
-        } else {
-          res.status(404).send();
-        }
+          rideService.find({driver:req.params.driver}).toArray(function(err, result) {
+            if (err) throw err;
+            console.log(result);
+            console.log("Ride in Progress")
+            res.status(200).send(JSON.stringify(result));
+          });
       });
-    });
-
   }
 });
 

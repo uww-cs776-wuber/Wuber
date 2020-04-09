@@ -8,9 +8,9 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Encryption {
+
     public static String key="HelloWorld";
     public static String message;
-
 
     public static String getEncryptedData(String msg) throws Exception {
         message=msg;

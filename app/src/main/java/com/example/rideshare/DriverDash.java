@@ -8,21 +8,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -59,7 +53,7 @@ public class DriverDash extends AppCompatActivity implements Runnable {
     private Thread worker;
 
     private final AtomicBoolean running = new AtomicBoolean(false); // boolean flag for Passenger details Thread
-    RecyclerView recyclerView;
+    RecyclerView recyclerView, recyclerView2;
     TextView navHeader, navLocation;
     public  static DriverDash driverDash;
     private LocationManager locationManager;
@@ -101,6 +95,7 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build(); // Retrofit is used to make http requests to the server. GsonConverterFactory method converts JSON to Java Object
         recyclerView= (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView2= (RecyclerView) findViewById(R.id.recyclerView2);
         retrofitInterface= retrofit.create(RetrofitInterface.class);
 
         getRequest(); // Get details of all passenger request on recycler view
@@ -176,6 +171,7 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                     String destinationArray[]= new String[results.size()];
                     String emailArray[]= new String[results.size()];
                     String pickupArray[]= new String[results.size()];
+                    String driverArray[]= new String[results.size()];
                     int i=0;
                     for(Result result: results){
                         displayRequest="";
@@ -188,12 +184,12 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                         locationArray[i]= result.getGpsCordinates();
                         destinationArray[i]= result.getDestination();
                         pickupArray[i]= result.getPickupTime();
+                        driverArray[i]="";
                         i++;
-                        //rideNotificaton(result.getEmail(),result.getGpsCordinates(),result.getDestination(),result.getPickupTime());
+                        rideNotificaton(result.getEmail(),result.getGpsCordinates(),result.getDestination(),result.getPickupTime());
                     }
-                    RecyclerAdapter recyclerAdapter= new RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray, pickupArray,username);
-
-                    recyclerView.setAdapter(recyclerAdapter);
+                    RideRequest_RecyclerAdapter rideRequestRecyclerAdapter = new RideRequest_RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray, pickupArray,username,driverArray);
+                    recyclerView.setAdapter(rideRequestRecyclerAdapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(DriverDash.this));
                 } else if (response.code() == 400) {
                     Toast.makeText(DriverDash.this, "Request Failed", Toast.LENGTH_LONG).show();
@@ -218,6 +214,7 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                     String destinationArray[]= new String[results.size()];
                     String emailArray[]= new String[results.size()];
                     String pickupArray[]= new String[results.size()];
+                    String driverArray[]= new String[results.size()];
                     int i=0;
                     for(Result result: results){
                         displayRequest="";
@@ -230,14 +227,13 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                         locationArray[i]= result.getGpsCordinates();
                         destinationArray[i]= result.getDestination();
                         pickupArray[i]= result.getPickupTime();
+                        driverArray[i]=result.getDriver();
                         i++;
-                        rideNotificaton(result.getEmail(),result.getGpsCordinates(),result.getDestination(),result.getPickupTime());
                     }
-                    Toast.makeText(DriverDash.this,displayRequest,Toast.LENGTH_LONG).show();
-                    RecyclerAdapter recyclerAdapter= new RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray, pickupArray,username);
 
-                    recyclerView.setAdapter(recyclerAdapter);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(DriverDash.this));
+                  RideInProgress_RecyclerAdapter rideInProgress_recyclerAdapter = new RideInProgress_RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray, pickupArray,username,driverArray);
+                    recyclerView2.setAdapter(rideInProgress_recyclerAdapter);
+                    recyclerView2.setLayoutManager(new LinearLayoutManager(DriverDash.this));
                 } else if (response.code() == 400) {
                     Toast.makeText(DriverDash.this, "Not Found", Toast.LENGTH_LONG).show();
                 }
