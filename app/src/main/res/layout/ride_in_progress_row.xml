@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:cardBackgroundColor="#DC143C"
+        app:cardBackgroundColor=" #e74c3c "
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,15 +26,14 @@
                 android:id="@+id/driverLocation"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginTop="41dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
+                android:layout_marginTop="62dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
                 android:layout_marginBottom="8dp"
-                android:background="#3498db"
+              
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/map"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0"
                 app:srcCompat="@android:drawable/ic_dialog_map" />
 
             <ImageView

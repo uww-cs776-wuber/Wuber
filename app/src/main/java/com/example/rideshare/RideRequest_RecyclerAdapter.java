@@ -60,21 +60,28 @@ public class RideRequest_RecyclerAdapter extends RecyclerView.Adapter<RideReques
             @Override
             public void onClick(View v) {
 
-                if(!DriverDash.getInstance().driverLocation.equals(""))
-                     rideService(email[i],location[i],destination[i],pickup[i],username,DriverDash.getInstance().driverLocation,"no");
-                else
-                    Toast.makeText(context,"You do not have your GPS location available at the moment. \nPlease drag the nav bar to check if your GPS location is available.",Toast.LENGTH_LONG).show();
-            }
+                AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                alertDialog.setTitle("Accept Request?");
+                alertDialog.setMessage("By pressing Accept you will be accepting the passsenger's request. \nPress outside the dialog to cancel.");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Accept",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                if(!DriverDash.getInstance().driverLocation.equals(""))
+                                    rideService(email[i],location[i],destination[i],pickup[i],username,DriverDash.getInstance().driverLocation,"no");
+                                else
+                                    Toast.makeText(context,"You do not have your GPS location available at the moment. \nPlease drag the nav bar to check if your GPS location is available.",Toast.LENGTH_LONG).show();
+                            }
+                        });
+                alertDialog.setCancelable(true);
+                alertDialog.show();
+                           }
         });
 
         retrofit= new Retrofit.Builder().baseUrl(BASEURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build(); // Retrofit is used to make http requests to the server. GsonConverterFactory method converts JSON to Java Object
-
         retrofitInterface= retrofit.create(RetrofitInterface.class);
-
-
-
     }
 
     public void rideService(String email, String location, String destination, String pickup, String username, String driverLocation, final String arrived){
@@ -115,7 +122,7 @@ public class RideRequest_RecyclerAdapter extends RecyclerView.Adapter<RideReques
                 Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-        Call<Void> delete = retrofitInterface.executeCloseRequest(email);
+        Call<Void> delete = retrofitInterface.executeAddRequest(email);
         delete.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

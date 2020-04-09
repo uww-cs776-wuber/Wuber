@@ -201,7 +201,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                 .setContentTitle("Hey "+user[0]+ " "+title)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText("Your driver for today is "+drivername+".\nClick the Map button on your dashboard to view the driver's location.")).setAutoCancel(true);
+                        .bigText("Your driver for today is "+drivername+".\nClick on the Red map icon on your dashboard to view the driver's location.")).setAutoCancel(true);
 
         NotificationManager
                 mNotificationManager =

@@ -166,6 +166,21 @@ mongoClient.connect(url, (err, db) => {
       });
     });
 
+  app.delete("/addClientRequest/:email", (req, res) => {
+      // Route to delete the request of the passenger by the driver after pickup is done.
+      const email = { email: req.params.email };
+      locationTable.deleteOne(email, function(err, obj) {
+        if (err) throw err;
+        console.log("1 document deleted");
+        res.status(200).send();
+      });
+      rideService.deleteOne(email, function(err, obj) {
+        if (err) throw err;
+        console.log("1 document deleted");
+        res.status(200).send();
+      });
+    });
+
     app.get("/driverNotify", (req, res) => {
       //Route to get all the client request in an array.
       locationTable.find({}).toArray(function(err, result) {
