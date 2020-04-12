@@ -95,8 +95,8 @@ public class RideInProgress_RecyclerAdapter extends RecyclerView.Adapter<RideInP
 
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle("Ride Request Complete");
-        alertDialog.setMessage("By pressing OK you will be terminating the Ride request for this passenger.\nPress outside the dialog to cancel");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+        alertDialog.setMessage("By pressing Terminate you will be terminating the ride request for this passenger.\nPress outside the dialog to cancel");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Terminate",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

@@ -2,8 +2,35 @@ const express = require("express");
 const app = express();
 const mongoClient = require("mongodb").MongoClient;
 const url = "mongodb://127.0.0.1:27017";
+var CryptoJS = require("crypto-js");
+const encryptedBase64Key = "VXdXQFdhckhhd2tzMTg2OA==";
+const parsedBase64Key = CryptoJS.enc.Base64.parse(encryptedBase64Key);
+const bcrypt = require('bcrypt');
+
+
 
 app.use(express.json()); // enable json parsing
+
+function encrypt(plaintText){
+  var encryptedData = CryptoJS.AES.encrypt(plaintText, parsedBase64Key, {
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.Pkcs7
+  });
+  console.log(encryptedData.toString(CryptoJS.enc.Utf8))
+  return encryptedData.toString();
+}
+
+function decrypt(cipherText) 
+{
+  var decryptedData = CryptoJS.AES.decrypt(cipherText, parsedBase64Key, {
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.Pkcs7
+  });
+ 
+  var decryptedText = decryptedData.toString(CryptoJS.enc.Utf8);
+  console.log("DecryptedText = " + decryptedText);
+  return decryptedText;
+}
 
 mongoClient.connect(url, (err, db) => {
   if (err) {
@@ -17,10 +44,12 @@ mongoClient.connect(url, (err, db) => {
 
     app.post("/signup", (req, res) => {
       //signup route
+      const password=decrypt(req.body.password);
+      let hashPassword = bcrypt.hashSync(password, 10);
       const newUser = {
-        email: req.body.email,
-        password: req.body.password,
-        userType: req.body.userType
+        email: decrypt(req.body.email),
+        password: hashPassword,
+        userType: decrypt(req.body.userType)
       };
       console.log(newUser);
       const duplicateUser = { email: newUser.email };
@@ -38,19 +67,24 @@ mongoClient.connect(url, (err, db) => {
 
     app.post("/login", (req, res) => {
       //login route
+      const decryptedPassword=decrypt(req.body.password);
+      const hashedPassword=bcrypt.hashSync(decryptedPassword, 10);
+      console.log(decryptedPassword+" "+hashedPassword);
       const currUser = {
-        email: req.body.email,
-        password: req.body.password,
-        userType: req.body.userType
+        email: decrypt(req.body.email),
+        password: hashedPassword,
+        userType: decrypt(req.body.userType)
       };
-      collection.findOne(currUser, (err, result) => {
-        if (result != null) {
+      collection.findOne({email:currUser.email}, (err, result) => {      
+        if (result != null && bcrypt.compareSync(decryptedPassword,result.password)) { //check if user email and hashed password matchess 
           const responseToClient = {
-            email: result.email,
-            userType: req.body.userType
+            email: encrypt(result.email),
+            userType: encrypt(result.userType)
           };
+          console.log(JSON.stringify(responseToClient));
           res.status(200).send(JSON.stringify(responseToClient));
-        } else {
+        }
+         else {
           res.status(404).send();
         }
       });
@@ -58,18 +92,13 @@ mongoClient.connect(url, (err, db) => {
 
     //Route to handle user requests.
     app.post("/clientRequest", (req, res) => {
-      var GPScordinates = req.body.gpsCordinates
-        .replace("\t", "")
-        .replace("\n", "")
-        .replace("\t", "");
-
-      const userRequest = {
-        email: req.body.email,
-        gpsCordinates: GPScordinates,
-        destination: req.body.destination,
-        pickuptime: req.body.pickuptime
-      };
-      console.log(userRequest.email);
+      const userRequest={
+        email:decrypt(req.body.email),
+        gpsCordinates: decrypt(req.body.gpsCordinates),
+        destination: decrypt(req.body.destination),
+        pickuptime: decrypt(req.body.pickuptime)
+      }
+       console.log(userRequest.email);
       const updateRequest = {
         $set: {
           gpsCordinates: userRequest.gpsCordinates,
@@ -117,7 +146,7 @@ mongoClient.connect(url, (err, db) => {
         pickuptime: req.body.pickuptime,
         driver: req.body.driver,
         driverLocation: req.body.driverLocation,
-        arrived:req.body.arrived
+        arrived: req.body.arrived
       };
       console.log(userRequest);
       const updateRequest = {
@@ -127,7 +156,7 @@ mongoClient.connect(url, (err, db) => {
           pickuptime: userRequest.pickuptime,
           driver: req.body.driver,
           driverLocation: req.body.driverLocation,
-          arrived:req.body.arrived
+          arrived: req.body.arrived
         }
       };
 
@@ -154,27 +183,27 @@ mongoClient.connect(url, (err, db) => {
     app.delete("/closeClientRequest/:email", (req, res) => {
       // Route to delete the request of the passenger by the driver after pickup is done.
       const email = { email: req.params.email };
-      rideService.deleteOne(email, function(err, obj) {
+      rideService.deleteOne(email, function (err, obj) {
         if (err) throw err;
         console.log("1 document deleted");
         res.status(200).send();
       });
-      rideService.deleteOne(email, function(err, obj) {
+      rideService.deleteOne(email, function (err, obj) {
         if (err) throw err;
         console.log("1 document deleted");
         res.status(200).send();
       });
     });
 
-  app.delete("/addClientRequest/:email", (req, res) => {
+    app.delete("/addClientRequest/:email", (req, res) => {
       // Route to delete the request of the passenger by the driver after pickup is done.
       const email = { email: req.params.email };
-      locationTable.deleteOne(email, function(err, obj) {
+      locationTable.deleteOne(email, function (err, obj) {
         if (err) throw err;
         console.log("1 document deleted");
         res.status(200).send();
       });
-      rideService.deleteOne(email, function(err, obj) {
+      rideService.deleteOne(email, function (err, obj) {
         if (err) throw err;
         console.log("1 document deleted");
         res.status(200).send();
@@ -183,7 +212,7 @@ mongoClient.connect(url, (err, db) => {
 
     app.get("/driverNotify", (req, res) => {
       //Route to get all the client request in an array.
-      locationTable.find({}).toArray(function(err, result) {
+      locationTable.find({}).toArray(function (err, result) {
         if (err) throw err;
         console.log(result);
         res.status(200).send(JSON.stringify(result));
@@ -192,7 +221,7 @@ mongoClient.connect(url, (err, db) => {
 
     app.get("/passengerNotify/:email", (req, res) => {
       // Route to get the driver name and location who has accepted the passenger request.
-      const email={email: req.params.email}
+      const email = { email: req.params.email }
       rideService.findOne(email, (err, result) => {
         if (result != null) {
           const responseToClient = {
@@ -202,7 +231,7 @@ mongoClient.connect(url, (err, db) => {
             pickuptime: result.pickuptime,
             driver: result.driver,
             driverLocation: result.driverLocation,
-            arrived:result.arrived
+            arrived: result.arrived
           };
           console.log(result)
           res.status(200).send(JSON.stringify(responseToClient));
@@ -214,13 +243,13 @@ mongoClient.connect(url, (err, db) => {
 
     app.get("/pickupInProgress/:driver", (req, res) => {
       // Route to get only the  ride requests in progess.
-          rideService.find({driver:req.params.driver}).toArray(function(err, result) {
-            if (err) throw err;
-            console.log(result);
-            console.log("Ride in Progress")
-            res.status(200).send(JSON.stringify(result));
-          });
+      rideService.find({ driver: req.params.driver }).toArray(function (err, result) {
+        if (err) throw err;
+        console.log(result);
+        console.log("Ride in Progress")
+        res.status(200).send(JSON.stringify(result));
       });
+    });
   }
 });
 

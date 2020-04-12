@@ -1,6 +1,8 @@
 package com.example.rideshare;
 
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,7 +23,8 @@ private Retrofit retrofit;
 private String BASEURL= retrofitInterface.BASEURL;
 private EditText txtEmail,txtPassword;
 public String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-
+public AES_encrpyt encryption= new AES_encrpyt();
+public  String EncryptedEmail="", EncryptedPassword="", EncrpytedUserType="",DecryptedEmail="",  DecryptedUserType="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,15 +44,24 @@ public String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
         }
         //Handle user Login authentication
         findViewById(R.id.signIn).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
 
                 String type="";
                 if (!txtEmail.getText().toString().equals("") && !txtPassword.getText().toString().equals(""))
                 { HashMap<String,String> hm = new HashMap<>();
-                hm.put("email",txtEmail.getText().toString());
-                hm.put("password",txtPassword.getText().toString());
-                hm.put("userType",userType);
+                    try {
+                        EncryptedEmail=encryption.getEncryptedData(txtEmail.getText().toString());
+                        EncryptedPassword=encryption.getEncryptedData(txtPassword.getText().toString());
+                        EncrpytedUserType=encryption.getEncryptedData(userType);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    hm.put("email",EncryptedEmail);
+                    hm.put("password",EncryptedPassword);
+                    hm.put("userType",EncrpytedUserType);
+
                     Call<Result> call = retrofitInterface.executeLogin(hm); // body of post request to send to nodejs server
                     call.enqueue(new Callback<Result>() { // call the http request.
                         @Override
@@ -57,11 +69,17 @@ public String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
                             // This function is called when the http request is successful
                             if(response.code()==200){
                                 Result result= response.body();
-                                Toast.makeText(MainActivity.this,"Welcome: "+result.getEmail(),Toast.LENGTH_SHORT).show();
-                                if(result.getUserType().equals("driver")) {
+                                try {
+                                    DecryptedEmail=encryption.getDecryptedData(result.getEmail());
+                                    DecryptedUserType=encryption.getDecryptedData(result.getUserType());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                Toast.makeText(MainActivity.this,"Welcome: "+DecryptedEmail,Toast.LENGTH_SHORT).show();
+                                if(DecryptedUserType.equals("driver")) {
                                   goToDriverDashboard(result.getEmail());
                                 }
-                                else if(result.getUserType().equals("passenger")){
+                                else if(DecryptedUserType.equals("passenger")){
                                    goToPassengerDashboard(result.getEmail());
                                 }
                             }
@@ -85,13 +103,21 @@ public String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
         //Handle User SignUp
         findViewById(R.id.signUp).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 if (!txtEmail.getText().toString().equals("") && !txtPassword.getText().toString().equals("") && txtEmail.getText().toString().matches(emailPattern) && txtEmail.getText().toString().length()>0 && txtPassword.getText().toString().length()>8) {
                     HashMap<String, String> hm = new HashMap<>();
-                    hm.put("email", txtEmail.getText().toString());
-                    hm.put("password", txtPassword.getText().toString());
-                    hm.put("userType",userType);
+                    try {
+                        EncryptedEmail=encryption.getEncryptedData(txtEmail.getText().toString());
+                        EncryptedPassword=encryption.getEncryptedData(txtPassword.getText().toString());
+                        EncrpytedUserType=encryption.getEncryptedData(userType);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    hm.put("email",EncryptedEmail);
+                    hm.put("password",EncryptedPassword);
+                    hm.put("userType",EncrpytedUserType);
                     Call<Void> call = retrofitInterface.executeSignup(hm);
                     call.enqueue(new Callback<Void>() {
                         @Override

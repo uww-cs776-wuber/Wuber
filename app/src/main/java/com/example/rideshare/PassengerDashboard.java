@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NotificationCompat;
@@ -48,14 +49,16 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     public EditText destinationTxt;
     String username, mapDriverLocation="";
     private Thread worker;
-    public Encryption encryption;
+    public AES_encrpyt encryption= new AES_encrpyt();
+    public  String EncryptedEmail="", EncryptedPassword="", EncrpytedUserType="",DecryptedEmail="",  DecryptedUserType="" , EncryptedUserLocation="", EncryptedUserDestination="", EncryptedPickupTime="";
 
     private final AtomicBoolean running = new AtomicBoolean(false); // boolean flag for Passenger details Thread
     private RetrofitInterface retrofitInterface;
     private String BASEURL= retrofitInterface.BASEURL;
     private Retrofit retrofit;
     public TextView driverUsername;
-
+    public String passengerLocation="";
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,9 +75,14 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         usernameTxt = (TextView) findViewById(R.id.username);
         timeTxt=(TextView) findViewById(R.id.timeTxt);
         username = getIntent().getStringExtra("welcome"); // get email from MainActivity
-        Toast.makeText(PassengerDashboard.this, username,Toast.LENGTH_LONG).show();
+        try {
+
         //String splitDomain[]=username.split("@");
-        usernameTxt.setText(username);
+
+            usernameTxt.setText(encryption.getDecryptedData(username));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         findViewById(R.id.driverInfo).setVisibility(View.INVISIBLE);
         locationTxt=(TextView)findViewById(R.id.location) ;
         destinationTxt=(EditText) findViewById(R.id.destinationTxt);
@@ -86,6 +94,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
             @Override
             public void onLocationChanged(Location location) {
                 locationTxt.setText( "\t"+location.getLatitude() + ",\n\t" + location.getLongitude());
+                passengerLocation=location.getLatitude()+","+location.getLongitude();
             }
 
             @Override
@@ -117,14 +126,14 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
 
         // Function to handle Request ride from client
         findViewById(R.id.requestRide).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                Encryption encryption = new Encryption();
-                String EncryptedEmail="", EncryptedUserLocation="", EncryptedUserDestination="", EncryptedPickupTime="";
+
               // Encrypt all the user request details using Encryption class and its getMessages function
                 try {
                     EncryptedEmail =encryption.getEncryptedData(username);
-                    EncryptedUserLocation= encryption.getEncryptedData(locationTxt.getText().toString());
+                    EncryptedUserLocation= encryption.getEncryptedData(passengerLocation);
                     EncryptedUserDestination= encryption.getEncryptedData(destinationTxt.getText().toString());
                     EncryptedPickupTime= encryption.getEncryptedData(timeTxt.getText().toString());
                 } catch (Exception e) {
@@ -136,10 +145,14 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
 
                     // Send ride request by client to server and receive response from server
                     HashMap<String,String> clientRequest= new HashMap<>();
-                    clientRequest.put("email",username);
-                    clientRequest.put("destination",destinationTxt.getText().toString());
-                    clientRequest.put("gpsCordinates",locationTxt.getText().toString());
-                    clientRequest.put("pickuptime",timeTxt.getText().toString());
+//                    clientRequest.put("email",username);
+//                    clientRequest.put("destination",destinationTxt.getText().toString());
+//                    clientRequest.put("gpsCordinates",locationTxt.getText().toString());
+//                    clientRequest.put("pickuptime",timeTxt.getText().toString());
+                    clientRequest.put("email",EncryptedEmail);
+                    clientRequest.put("destination",EncryptedUserDestination);
+                    clientRequest.put("gpsCordinates",EncryptedUserLocation);
+                    clientRequest.put("pickuptime",EncryptedPickupTime);
 
                     Call<Result> call = retrofitInterface.executeClientRequest(clientRequest);
                     call.enqueue(new Callback<Result>() {
@@ -163,14 +176,8 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                 {
                     Toast.makeText(PassengerDashboard.this,"Please wait for your GPS location. \nPlease enter your destination and pickup time",Toast.LENGTH_SHORT).show();
                 }
-
             }
-
         });
-
-//        if(driverLocation.getText().toString().equals("")) {
-
-//        }
     }
 
 

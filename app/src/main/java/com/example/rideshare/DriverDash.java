@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -63,12 +64,18 @@ public class DriverDash extends AppCompatActivity implements Runnable {
     }
     public String driverLocation="";
     public String username="";
-
+    public AES_encrpyt encryption= new AES_encrpyt();
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         driverDash=this;
         username=getIntent().getStringExtra("welcome");
+        try {
+            username=encryption.getDecryptedData(username);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         setContentView(R.layout.activity_driver_dash);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -222,6 +229,7 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                         displayRequest+="Location: "+result.getGpsCordinates()+"\n";
                         displayRequest+="Destination: "+result.getDestination()+"\n";
                         displayRequest+="Pickup Time: "+result.getPickupTime()+"\n";
+                        displayRequest+="Driver: "+result.getDriver();
                         reqArray[i]= displayRequest;
                         emailArray[i]=result.getEmail();
                         locationArray[i]= result.getGpsCordinates();
