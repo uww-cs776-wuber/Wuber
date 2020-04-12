@@ -123,7 +123,7 @@ public  String EncryptedEmail="", EncryptedPassword="", EncrpytedUserType="",Dec
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
                             if (response.code() == 200) {
-                                Toast.makeText(MainActivity.this, "Sign In Successful", Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this, "Sign Up Successful", Toast.LENGTH_LONG).show();
                             } else if (response.code() == 400) {
                                 Toast.makeText(MainActivity.this, "Email already exists!", Toast.LENGTH_LONG).show();
                             }

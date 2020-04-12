@@ -11,6 +11,7 @@ const bcrypt = require('bcrypt');
 
 app.use(express.json()); // enable json parsing
 
+//AES encryption
 function encrypt(plaintText){
   var encryptedData = CryptoJS.AES.encrypt(plaintText, parsedBase64Key, {
     mode: CryptoJS.mode.ECB,
@@ -20,6 +21,7 @@ function encrypt(plaintText){
   return encryptedData.toString();
 }
 
+//AES decryption
 function decrypt(cipherText) 
 {
   var decryptedData = CryptoJS.AES.decrypt(cipherText, parsedBase64Key, {
@@ -32,6 +34,7 @@ function decrypt(cipherText)
   return decryptedText;
 }
 
+//Database connection
 mongoClient.connect(url, (err, db) => {
   if (err) {
     console.log("Error while connection mongoClient");

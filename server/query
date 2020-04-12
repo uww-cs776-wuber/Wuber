@@ -1,3 +1,7 @@
 use rideShareDb 
 db.locationTable.find({}); 
 db.locationTable.insertOne({email : "yui@gmail.com", gpsCordinates : "42.83791078,-88.75257608", destination : "Walmart", pickuptime : "12:2" })
+db.locationTable.insertOne({email : "john@gmail.com", gpsCordinates : "42.83791078,-88.75257608", destination : "Walmart", pickuptime : "12:2" })
+db.locationTable.insertOne({email : "jake@gmail.com", gpsCordinates : "42.83791078,-88.75257608", destination : "Walmart", pickuptime : "12:2" })
+db.locationTable.insertOne({email : "evan@gmail.com", gpsCordinates : "42.83791078,-88.75257608", destination : "Walmart", pickuptime : "12:2" })
+

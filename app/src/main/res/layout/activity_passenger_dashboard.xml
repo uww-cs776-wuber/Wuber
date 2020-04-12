@@ -71,7 +71,7 @@
         android:layout_marginLeft="54dp"
         android:layout_marginEnd="54dp"
         android:layout_marginRight="54dp"
-        android:layout_marginBottom="51dp"
+        android:layout_marginBottom="16dp"
         android:background=" #148f77 "
         android:text="Request Ride"
         android:textColor="#fff"
