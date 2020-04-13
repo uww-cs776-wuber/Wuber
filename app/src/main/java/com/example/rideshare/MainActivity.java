@@ -77,10 +77,10 @@ public  String EncryptedEmail="", EncryptedPassword="", EncrpytedUserType="",Dec
                                 }
                                 Toast.makeText(MainActivity.this,"Welcome: "+DecryptedEmail,Toast.LENGTH_SHORT).show();
                                 if(DecryptedUserType.equals("driver")) {
-                                  goToDriverDashboard(result.getEmail());
+                                  goToDriverDashboard(DecryptedEmail);
                                 }
                                 else if(DecryptedUserType.equals("passenger")){
-                                   goToPassengerDashboard(result.getEmail());
+                                   goToPassengerDashboard(DecryptedEmail);
                                 }
                             }
                             else if(response.code()==404){

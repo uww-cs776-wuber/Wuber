@@ -7,7 +7,7 @@
     tools:context=".Home">
 
     <ImageView
-        android:background="@drawable/custom_image_view"
+        android:background="@drawable/custom_signup_button"
         android:id="@+id/driver"
         android:layout_width="250dp"
         android:layout_height="250dp"
@@ -23,7 +23,7 @@
         app:srcCompat="@drawable/drivericon" />
 
     <ImageView
-        android:background="@drawable/custom_image_view"
+        android:background="@drawable/custom_log_in_button"
         android:id="@+id/passenger"
         android:layout_width="250dp"
         android:layout_height="250dp"

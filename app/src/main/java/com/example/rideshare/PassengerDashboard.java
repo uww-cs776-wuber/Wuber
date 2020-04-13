@@ -75,14 +75,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         usernameTxt = (TextView) findViewById(R.id.username);
         timeTxt=(TextView) findViewById(R.id.timeTxt);
         username = getIntent().getStringExtra("welcome"); // get email from MainActivity
-        try {
-
-        //String splitDomain[]=username.split("@");
-
-            usernameTxt.setText(encryption.getDecryptedData(username));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        usernameTxt.setText(username);
         findViewById(R.id.driverInfo).setVisibility(View.INVISIBLE);
         locationTxt=(TextView)findViewById(R.id.location) ;
         destinationTxt=(EditText) findViewById(R.id.destinationTxt);
@@ -142,13 +135,8 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                 // This above try/catch part is for the security part only so SoftwareEngineering class do not need to care for this
 
                 if(!locationTxt.getText().toString().equals("") && !timeTxt.getText().toString().equals("") && !destinationTxt.getText().toString().equals("")){
-
-                    // Send ride request by client to server and receive response from server
+                    // Send encrypted ride request by client to server and receive response from server
                     HashMap<String,String> clientRequest= new HashMap<>();
-//                    clientRequest.put("email",username);
-//                    clientRequest.put("destination",destinationTxt.getText().toString());
-//                    clientRequest.put("gpsCordinates",locationTxt.getText().toString());
-//                    clientRequest.put("pickuptime",timeTxt.getText().toString());
                     clientRequest.put("email",EncryptedEmail);
                     clientRequest.put("destination",EncryptedUserDestination);
                     clientRequest.put("gpsCordinates",EncryptedUserLocation);

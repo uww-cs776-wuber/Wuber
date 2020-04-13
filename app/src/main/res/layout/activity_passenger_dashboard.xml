@@ -57,7 +57,7 @@
         android:layout_marginTop="11dp"
         android:layout_marginEnd="174dp"
         android:layout_marginRight="174dp"
-        android:background="@drawable/custom_map_button"
+        android:background="@drawable/driver_locate_button"
         android:onClick="mapLocation"
         android:textColor="#fff"
         android:textSize="12sp"
