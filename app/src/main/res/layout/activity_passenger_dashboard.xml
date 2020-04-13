@@ -8,6 +8,7 @@
 
 
     <TextView
+        android:background="@drawable/custom_input_form"
         android:id="@+id/location"
         android:layout_width="359dp"
         android:layout_height="47dp"
@@ -27,6 +28,7 @@
         app:layout_constraintTop_toBottomOf="@+id/username" />
 
     <TextView
+        android:background="@drawable/custom_input_form"
         android:id="@+id/username"
         android:layout_width="359dp"
         android:layout_height="47dp"
@@ -47,14 +49,15 @@
 
     <ImageButton
         android:id="@+id/maplocation"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginStart="173dp"
         android:layout_marginLeft="173dp"
         android:layout_marginTop="11dp"
         android:layout_marginEnd="174dp"
         android:layout_marginRight="174dp"
-        android:background="#fff"
+        android:background="@drawable/custom_map_button"
         android:onClick="mapLocation"
         android:textColor="#fff"
         android:textSize="12sp"
@@ -72,7 +75,7 @@
         android:layout_marginEnd="54dp"
         android:layout_marginRight="54dp"
         android:layout_marginBottom="16dp"
-        android:background=" #148f77 "
+        android:background="@drawable/custom_ride_request_button"
         android:text="Request Ride"
         android:textColor="#fff"
         android:textSize="12sp"
@@ -82,6 +85,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
+        android:background="@drawable/custom_input_form"
         android:id="@+id/destinationTxt"
         android:layout_width="359dp"
         android:layout_height="47dp"
@@ -102,6 +106,7 @@
         app:layout_constraintTop_toBottomOf="@+id/location" />
 
     <TextView
+        android:background="@drawable/custom_input_form"
         android:id="@+id/timeTxt"
         android:layout_width="131dp"
         android:layout_height="47dp"
@@ -145,6 +150,7 @@
         android:layout_marginBottom="14dp"
         android:hint="Driver Info"
         android:textColor="#000"
+
         android:textSize="20dp"
         app:layout_constraintBottom_toTopOf="@+id/requestRide"
         app:layout_constraintEnd_toEndOf="parent"
@@ -155,6 +161,7 @@
         android:id="@+id/imageView2"
         android:layout_width="250dp"
         android:layout_height="250dp"
+
         android:layout_marginTop="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

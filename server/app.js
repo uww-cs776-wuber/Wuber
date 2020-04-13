@@ -1,9 +1,15 @@
 const express = require("express");
+
 const app = express();
+
 const mongoClient = require("mongodb").MongoClient;
+
 const url = "mongodb://127.0.0.1:27017";
+
 var CryptoJS = require("crypto-js");
-const encryptedBase64Key = "VXdXQFdhckhhd2tzMTg2OA==";
+
+const encryptedBase64Key = "VXdXQFdhckhhd2tzMTg2OA=="; // Key
+
 const parsedBase64Key = CryptoJS.enc.Base64.parse(encryptedBase64Key);
 const bcrypt = require('bcrypt');
 

@@ -226,7 +226,7 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                     for(Result result: results){
                         displayRequest="";
                         displayRequest+="Passenger: "+result.getEmail()+"\n";
-                        displayRequest+="Location: "+result.getGpsCordinates()+"\n";
+                    //    displayRequest+="Location: "+result.getGpsCordinates()+"\n";
                         displayRequest+="Destination: "+result.getDestination()+"\n";
                         displayRequest+="Pickup Time: "+result.getPickupTime()+"\n";
                         displayRequest+="Driver: "+result.getDriver();

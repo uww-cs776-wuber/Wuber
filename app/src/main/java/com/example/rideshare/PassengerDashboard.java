@@ -93,7 +93,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                locationTxt.setText( "\t"+location.getLatitude() + ",\n\t" + location.getLongitude());
+                locationTxt.setText( "\t"+location.getLatitude() + ", " + location.getLongitude());
                 passengerLocation=location.getLatitude()+","+location.getLongitude();
             }
 
