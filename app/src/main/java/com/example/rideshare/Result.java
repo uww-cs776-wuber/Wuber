@@ -5,6 +5,7 @@ public class Result {
     private String email;
     private String gpsCordinates;
     private String pickuptime;
+    private String intoxicated;
     public String getEmail() {
         return email;
     }
@@ -17,4 +18,5 @@ public class Result {
         return pickuptime;
     }
     public String getUserType() { return userType; }
+    public String getIntoxicated() { return intoxicated; }
 }

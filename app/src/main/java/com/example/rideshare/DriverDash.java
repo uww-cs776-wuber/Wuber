@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +14,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.NavController;
@@ -26,6 +28,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -96,6 +99,8 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                     String locationArray[]= new String[results.size()];
                     String destinationArray[]= new String[results.size()];
                     String emailArray[]= new String[results.size()];
+                    String intoxicatedArray[] = new String[results.size()];
+
                     int i=0;
                     for(Result result: results){
                         displayRequest="";
@@ -107,10 +112,11 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                         emailArray[i]=result.getEmail();
                         locationArray[i]= result.getGpsCordinates();
                         destinationArray[i]= result.getDestination();
+                        intoxicatedArray[i] = result.getIntoxicated();
                         i++;
                         rideNotificaton(result.getEmail(),result.getGpsCordinates(),result.getDestination(),result.getPickupTime());
                     }
-                    RecyclerAdapter recyclerAdapter= new RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray);
+                    RecyclerAdapter recyclerAdapter= new RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray,intoxicatedArray);
 
                     recyclerView.setAdapter(recyclerAdapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(DriverDash.this));

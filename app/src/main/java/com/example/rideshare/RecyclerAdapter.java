@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,17 +29,19 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
     String location[];
     String destination[];
     String email[];
+    String intoxicated[];
     Context context;
     String BASEURL = retrofitInterface.BASEURL;
 
 
 
-    public  RecyclerAdapter(Context ct, String req[], String em[], String loc[], String des[]){
+    public  RecyclerAdapter(Context ct, String req[], String em[], String loc[], String des[], String intox[]){
         context=ct;
         request=req;
         location=loc;
         destination=des;
         email=em;
+        intoxicated=intox;
     }
     @NonNull
     @Override
@@ -54,6 +57,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
 
 
         requestViewHolder.requestDetails.setText(request[i]);
+
+        if (intoxicated[i].equals("true")) {
+            requestViewHolder.intoxicatedImage.setImageResource(R.drawable.intoxicated);
+        }
+
+        Log.d(request[i], "------REQUEST-------");
         requestViewHolder.mapLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,15 +122,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Reques
     public class RequestViewHolder extends  RecyclerView.ViewHolder {
         TextView requestDetails;
         ImageView clientImage;
+        ImageView intoxicatedImage;
         ImageButton mapLocation, close, driverLocation;
 
         public RequestViewHolder(@NonNull View itemView) {
             super(itemView);
             requestDetails=itemView.findViewById(R.id.ClientRequestDetails);
             clientImage=itemView.findViewById(R.id.ClientImage);
+            intoxicatedImage=itemView.findViewById(R.id.IntoxicatedImage);
             mapLocation=itemView.findViewById(R.id.map);
             close=itemView.findViewById(R.id.close);
             driverLocation=itemView.findViewById(R.id.driverLocation);
+
         }
     }
 }

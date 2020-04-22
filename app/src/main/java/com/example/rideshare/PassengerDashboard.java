@@ -23,6 +23,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -48,6 +49,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     private RetrofitInterface retrofitInterface;
     private String BASEURL= retrofitInterface.BASEURL;
     private Retrofit retrofit;
+    private CheckBox intoxicated;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,10 +111,12 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         }
 
 
+        intoxicated = findViewById(R.id.check_intoxicated);
         // Function to handle Request ride from client
         findViewById(R.id.requestRide).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
 
                 if(!locationTxt.getText().toString().equals("") && !timeTxt.getText().toString().equals("") && !destinationTxt.getText().toString().equals("")){
 
@@ -122,7 +126,15 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                     clientRequest.put("destination",destinationTxt.getText().toString());
                     clientRequest.put("gpsCordinates",locationTxt.getText().toString());
                     clientRequest.put("pickuptime",timeTxt.getText().toString());
-
+                    //clientRequest.put("intoxicated","false");
+                    if(intoxicated.isChecked()) {
+                        Toast.makeText(PassengerDashboard.this, intoxicated.getText(), Toast.LENGTH_LONG).show();
+                        clientRequest.put("intoxicated","true");
+                    }
+                    else {
+                        Toast.makeText(PassengerDashboard.this, "Nothing checked", Toast.LENGTH_LONG).show();
+                        clientRequest.put("intoxicated","false");
+                    }
                     Call<Result> call = retrofitInterface.executeClientRequest(clientRequest);
                     call.enqueue(new Callback<Result>() {
                         @Override
