@@ -8,6 +8,7 @@ public class Result {
     private String gpsCordinates;
     private String pickuptime;
     private String arrived;
+    private String passengerRequestStatus;
     public String getEmail() {
         return email;
     }
@@ -23,4 +24,7 @@ public class Result {
     public String getDriver() { return driver; }
     public String getDriverLocation() { return driverLocation; }
     public String getArrived() { return arrived; }
+    public String getPassengerRequestStatus() {
+        return passengerRequestStatus;
+    }
 }

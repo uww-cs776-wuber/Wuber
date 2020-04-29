@@ -12,7 +12,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface RetrofitInterface {
-    String BASEURL="http://192.168.1.8:3000";
+    String BASEURL="https://uww-uber.herokuapp.com/";
     @POST("/login")
     Call<Result> executeLogin(@Body HashMap<String,String> map);
     @POST("/signup")
@@ -27,6 +27,8 @@ public interface RetrofitInterface {
     Call <Result> executePassengerNotify(@Path("email") String email);
     @GET("/pickupInProgress/{driver}")
     Call <List<Result>> executePickupInProgress(@Path("driver") String email);
+    @GET("/checkPassengerRequest/{email}")
+    Call<Result> executeCheckRequest(@Path("email") String email);
     @DELETE("/closeClientRequest/{email}")
     Call<Void> executeCloseRequest(@Path("email") String email);
     @DELETE("/addClientRequest/{email}")

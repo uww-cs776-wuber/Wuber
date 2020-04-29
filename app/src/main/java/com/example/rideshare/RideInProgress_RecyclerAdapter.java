@@ -54,7 +54,7 @@ public class RideInProgress_RecyclerAdapter extends RecyclerView.Adapter<RideInP
 
     @Override
     public void onBindViewHolder(@NonNull RideInProgress_RecyclerAdapter.RequestViewHolder requestViewHolder, final int i) {
-        requestViewHolder.requestDetails.setText("Ride In Progress\n"+request[i]);
+        requestViewHolder.requestDetails.setText(request[i]);
 
         requestViewHolder.mapLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,7 +152,7 @@ public class RideInProgress_RecyclerAdapter extends RecyclerView.Adapter<RideInP
                 if (response.code() == 200) {
                     Result result= response.body();
                     if(result.getArrived().equals("no"))
-                        Toast.makeText(context, "Ride request for "+result.getEmail()+" accepted. \nPickup time: "+result.getPickupTime(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "Ride request for "+result.getEmail()+". \nPickup time: "+result.getPickupTime(), Toast.LENGTH_LONG).show();
                     else if(result.getArrived().equals("yes"))
                         Toast.makeText(context, "Notifying "+result.getEmail()+" of your arrival. \nYour location has been shared to the passenger", Toast.LENGTH_LONG).show();
                 } else if (response.code() == 400) {

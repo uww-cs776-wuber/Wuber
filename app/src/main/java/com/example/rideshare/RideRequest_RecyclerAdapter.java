@@ -87,12 +87,11 @@ public class RideRequest_RecyclerAdapter extends RecyclerView.Adapter<RideReques
     public void rideService(String email, String location, String destination, String pickup, String username, String driverLocation, final String arrived){
 
        if(arrived.equals("yes")) {
-        location=destination;
+           Uri gmmIntentUri = Uri.parse("google.navigation:q=" + destination);
+           Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+           mapIntent.setPackage("com.google.android.apps.maps");
+           context.startActivity(mapIntent);
        }
-        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + location);
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
-        context.startActivity(mapIntent);
 
         HashMap<String,String> takePassenger= new HashMap<>();
         takePassenger.put("email",email);
