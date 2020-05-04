@@ -8,8 +8,6 @@ var fs=require('fs');
 const mongoClient = require("mongodb").MongoClient;
 
 const url = "mongodb+srv://anmolk7:Ivf6SIbdAofN0ELE@cluster0-2wdwj.mongodb.net/test?retryWrites=true&w=majority";
-
-//
 //mongodb://127.0.0.1:27017
 // mongodb+srv://anmolk7:Ivf6SIbdAofN0ELE@cluster0-2wdwj.mongodb.net/test?retryWrites=true&w=majority
 var CryptoJS = require("crypto-js");
@@ -63,6 +61,7 @@ mongoClient.connect(url, (err, db) => {
 
       res.sendFile(__dirname+'/index.html');
     });
+    
     app.post("/signup", (req, res) => {
       //signup route
       const password=decrypt(req.body.password);
@@ -204,41 +203,39 @@ mongoClient.connect(url, (err, db) => {
       // Route to delete the request of the passenger by the driver after pickup is done.
       const email = { email: req.params.email };
       rideService.deleteOne(email, function (err, obj) {
-        if (err){
-          res.status(404).send()
-        }
-        else{
+        if (err) throw err;
         console.log("1 document deleted");
-        res.status(200).send();}
-
+        res.status(200).send();
+      });
+      rideService.deleteOne(email, function (err, obj) {
+        if (err) throw err;
+        console.log("1 document deleted");
+        res.status(200).send();
       });
     });
 
     app.delete("/addClientRequest/:email", (req, res) => {
-      // Route to delete the request from general request queue and add it to the ride in progress database.
+      // Route to delete the request of the passenger by the driver after pickup is done.
       const email = { email: req.params.email };
       locationTable.deleteOne(email, function (err, obj) {
-        if (err){
-          res.status(404).send()
-        }
-        else{
+        if (err) throw err;
         console.log("1 document deleted");
-        res.status(200).send();}
-
+        res.status(200).send();
+      });
+      rideService.deleteOne(email, function (err, obj) {
+        if (err) throw err;
+        console.log("1 document deleted");
+        res.status(200).send();
       });
     });
 
     app.get("/driverNotify", (req, res) => {
       //Route to get all the client request in an array.
       locationTable.find({}).toArray(function (err, result) {
-        if (result!=null){
+        if (err) throw err;
         console.log(result);
         res.status(200).send(JSON.stringify(result));
-      }
-      else{
-        res.status(404).send();
-      }
-    });
+      });
     });
 
     app.get("/passengerNotify/:email", (req, res) => {
@@ -266,13 +263,10 @@ mongoClient.connect(url, (err, db) => {
     app.get("/pickupInProgress/:driver", (req, res) => {
       // Route to get only the  ride requests in progess.
       rideService.find({ driver: req.params.driver }).toArray(function (err, result) {
-        if (err) {
-          res.status(404).send();
-        }
-        else{
+        if (err) throw err;
         console.log(result);
         console.log("Ride in Progress")
-        res.status(200).send(JSON.stringify(result));}
+        res.status(200).send(JSON.stringify(result));
       });
     });
 
