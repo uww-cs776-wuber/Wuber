@@ -296,5 +296,5 @@ mongoClient.connect(url, (err, db) => {
 });
 
 app.listen(PORT, () => {
-  console.log("server is listening on port 3000 bitch!");
+  console.log("server is listening on port 3000");
 });
