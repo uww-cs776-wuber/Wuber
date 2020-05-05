@@ -35,6 +35,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.CompoundButton;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -56,6 +57,7 @@ public class DriverDash extends AppCompatActivity implements Runnable {
     private final AtomicBoolean running = new AtomicBoolean(false); // boolean flag for Passenger details Thread
     RecyclerView recyclerView, recyclerView2;
     TextView navHeader, navLocation;
+    private Switch SortSwitch;
     public  static DriverDash driverDash;
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -63,7 +65,11 @@ public class DriverDash extends AppCompatActivity implements Runnable {
         return driverDash;
     }
     public String driverLocation="";
+    public Location dLoc;
+    public Double driverLat = 0.0;
+    public Double driverLong = 0.0;
     public String username="";
+    public boolean SortByDistance = false;
     public AES_encrpyt encryption= new AES_encrpyt();
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -82,6 +88,7 @@ public class DriverDash extends AppCompatActivity implements Runnable {
         navHeader = (TextView)header.findViewById(R.id.NavHeader);
         navLocation = (TextView)header.findViewById(R.id.NavLocation);
         navHeader.setText(username);
+        SortSwitch = (Switch) driverDash.findViewById(R.id.DriverSortSwitch);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -104,12 +111,30 @@ public class DriverDash extends AppCompatActivity implements Runnable {
 
         start(); // start the get passenger request thread. This thread executes every 30 seconds
         //Location service to get GPS location of driver
+        
+         SortSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    SortByDistance = true;
+                    getRequest();
+                } else {
+                    SortByDistance = false;
+                    getRequest();
+                }
+            }
+        });
+        
+        
+        
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                driverLocation=location.getLatitude()+","+location.getLongitude();
-                navLocation.setText("\nGPS : "+driverLocation);
+                 driverLocation = location.getLatitude() + "," + location.getLongitude();
+                driverLat = location.getLatitude();
+                driverLong = location.getLongitude();
+                Log.d("LOCATION DEBUG:", "LAT: " + String.valueOf(driverLat));
+                navLocation.setText("\nGPS : " + driverLocation);
             }
 
             @Override
@@ -175,8 +200,26 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                     String pickupArray[]= new String[results.size()];
                     String driverArray[]= new String[results.size()];
                     int i=0;
+                    dLoc = GetPassengerLocation(driverLocation);
+                    
+                    Toast.makeText(DriverDash.this, String.valueOf(dLoc.getLatitude()), Toast.LENGTH_LONG).show();
+                    if (dLoc != null) {
+                        results = MergeSortResults(results, SortByDistance);
+                        Toast.makeText(DriverDash.this, "Sorted based on Distance", Toast.LENGTH_LONG).show();
+
+                    }
+                    
                     for(Result result: results){
                         displayRequest="";
+                        Location tmpLocation = GetPassengerLocation(result.getGpsCordinates());  
+                        displayRequest += "Passenger: " + result.getEmail() + "\n";
+                        try {
+                            displayRequest += "Distance: " + ((dLoc.distanceTo(tmpLocation) / 1000) * 0.62137f) + "Miles \n";
+                        } catch (Exception e) {
+
+                        } finally {
+                            Toast.makeText(DriverDash.this, "Final Block Reached", Toast.LENGTH_LONG).show();
+                        }
                         displayRequest+="Passenger: "+result.getEmail()+"\n";
                     //    displayRequest+="Location: "+result.getGpsCordinates()+"\n";
                         displayRequest+="Destination: "+result.getDestination()+"\n";
@@ -333,6 +376,104 @@ public class DriverDash extends AppCompatActivity implements Runnable {
             }
             getRequest();
            // Get passenger request function.
+        }
+    }
+    public Location GetPassengerLocation(String gpsCoord){
+        Location passengerLoc = new Location("temp passenger");
+        String [] gps = gpsCoord.split(",");
+        try {
+            passengerLoc.setLongitude(Double.parseDouble(gps[1]));
+
+            passengerLoc.setLatitude(Double.parseDouble(gps[0]));
+        }
+        catch (Exception e){
+            Toast.makeText(DriverDash.this, "Parse Failed", Toast.LENGTH_LONG).show();
+        }
+        return passengerLoc;
+    }
+    public int TimeToInt(String str){
+        String [] s = str.split(":");
+        str = "";
+        for (String x: s) {
+            str += x;
+        }
+
+        try{
+            return Integer.parseInt(str);
+        }catch (Exception e){
+            return 0;
+        }
+
+
+
+
+    }
+
+    public List<Result> MergeSortResults(List<Result> results, boolean byDistance){
+        Result [] arr = new Result[results.size()];
+        for(int i = 0; i < results.size();i++){
+            arr[i] = results.get(i);
+        }
+        arr = Sort(arr, byDistance);
+        results.clear();
+        for(Result r: arr){
+            results.add(r);
+        }
+        return results;
+    }
+
+    private Result []  Sort(Result[] a, boolean byDistance){
+        int size = a.length;
+        mergeSort(a, size, dLoc, byDistance);
+        return a;
+
+    }
+
+    public void mergeSort(Result[] a, int n, Location driver, boolean byDistance) {
+        if (n < 2) {
+            return;
+        }
+        int mid = n / 2;
+        Result[] l = new Result[mid];
+        Result[] r = new Result[n - mid];
+
+        for (int i = 0; i < mid; i++) {
+            l[i] = a[i];
+        }
+        for (int i = mid; i < n; i++) {
+            r[i - mid] = a[i];
+        }
+        mergeSort(l, mid, driver, byDistance);
+        mergeSort(r, n - mid, driver, byDistance);
+
+        merge(a, l, r, mid, n - mid, driver, byDistance);
+    }
+
+    public void merge(
+            Result[] a, Result[] l, Result[] r, int left, int right, Location driver, boolean byDistance) {
+
+        int i = 0, j = 0, k = 0;
+        while (i < left && j < right) {
+            Location lloc = GetPassengerLocation("test");
+            if (byDistance) {
+                if (driver.distanceTo(GetPassengerLocation(l[i].getGpsCordinates())) <= driver.distanceTo(GetPassengerLocation(r[j].getGpsCordinates()))) {
+                    a[k++] = l[i++];
+                } else {
+                    a[k++] = r[j++];
+                }
+            } else {
+                if (TimeToInt(l[i].getPickupTime()) <= TimeToInt(r[j].getPickupTime())) {
+                    a[k++] = l[i++];
+                } else {
+                    a[k++] = r[j++];
+                }
+            }
+        }
+        while (i < left) {
+            a[k++] = l[i++];
+        }
+        while (j < right) {
+            a[k++] = r[j++];
         }
     }
 }
