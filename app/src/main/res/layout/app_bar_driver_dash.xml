@@ -18,6 +18,15 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             />
+        
+        <Switch
+            android:id="@+id/DriverSortSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Sort By Distance"
+            android:textOff="Sorting By Time"
+            android:textOn="Sorting By Distance" />
 
     </android.support.design.widget.AppBarLayout>
 
