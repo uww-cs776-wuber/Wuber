@@ -20,22 +20,17 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
-import com.google.firebase.auth.FirebaseAuth;
-
-import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,7 +45,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     public EditText destinationTxt;
     String username, mapDriverLocation = "";
     private Thread worker;
-
+    public int hr=0,min=0;
     public AES_encrpyt encryption = new AES_encrpyt();
     public String EncryptedEmail = "", EncryptedPassword = "", EncrpytedUserType = "", DecryptedEmail = "", DecryptedUserType = "", EncryptedUserLocation = "", EncryptedUserDestination = "", EncryptedPickupTime = "";
 
@@ -259,7 +254,6 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         alertDialog.show();
     }
 
-
     public void setTime(View view) {
         DialogFragment timePicker = new TimePickerFragment();
         timePicker.show(getSupportFragmentManager(), "time picker");
@@ -268,8 +262,34 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         TextView timeTxt = (TextView) findViewById(R.id.timeTxt);
-        timeTxt.setText(hourOfDay + ":" + minute);
+        hr=hourOfDay;
+        min=minute;
+        if(checkTime(hr,min).equals("true")){
+            timeTxt.setText(hourOfDay + ":" + minute);
+        }
+        else
+            timeTxt.setText("");
+
     }
+
+    public String checkTime(int hour, int min) {
+        String timeStat="true";
+        Date currentTime = Calendar.getInstance().getTime();
+        int currentHr=currentTime.getHours();
+        int currentMin=currentTime.getMinutes();
+        if( currentHr>hour) {
+            timeStat="false";
+            Toast.makeText(PassengerDashboard.this, "The Time you selected has already passed. Please select a valid time.",Toast.LENGTH_LONG).show();
+        }
+        if( currentMin> min){
+            if(currentHr>=hour){
+                timeStat="false";
+                Toast.makeText(PassengerDashboard.this,"The Time you selected has already passed. Please select a valid time.",Toast.LENGTH_LONG).show();
+            }
+        }
+    return timeStat;
+    }
+
 
     public void start() { //function to start the thread
         worker = new Thread(this);
