@@ -23,6 +23,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -42,6 +43,7 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     private LocationManager locationManager;
     private LocationListener locationListener;
     public TextView locationTxt, timeTxt, usernameTxt;
+    public CheckBox wheelChair, uwwStudent, elderly, intoxcicated;
     public EditText destinationTxt;
     String username, mapDriverLocation = "";
     private Thread worker;
@@ -78,6 +80,10 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         usernameTxt.setText(username);
         checkRideStatus(username);
         findViewById(R.id.driverInfo).setVisibility(View.INVISIBLE);
+        wheelChair=(CheckBox) findViewById(R.id.wheelChair);
+        uwwStudent=(CheckBox) findViewById(R.id.uwwStudent);
+        elderly=(CheckBox) findViewById(R.id.elderly);
+        intoxcicated=(CheckBox) findViewById(R.id.intoxicated);
         locationTxt = (TextView) findViewById(R.id.location);
         destinationTxt = (EditText) findViewById(R.id.destinationTxt);
         getRequest();
@@ -117,6 +123,38 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                 getLocation();
             }
         }
+        wheelChair.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    Toast.makeText(PassengerDashboard.this,"Passenger is requesting for wheelchair",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        uwwStudent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    Toast.makeText(PassengerDashboard.this,"Passenger is a UWW Student",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        intoxcicated.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    Toast.makeText(PassengerDashboard.this,"Passenger is intoxicated",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        elderly.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    Toast.makeText(PassengerDashboard.this,"Passenger is elderly",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         // Function to handle Request ride from client
         findViewById(R.id.requestRide).setOnClickListener(new View.OnClickListener() {
@@ -145,6 +183,26 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                         clientRequest.put("destination", EncryptedUserDestination);
                         clientRequest.put("gpsCordinates", EncryptedUserLocation);
                         clientRequest.put("pickuptime", EncryptedPickupTime);
+
+                        if(wheelChair.isChecked()){
+                            clientRequest.put("wheelChair","yes");
+                        }else
+                            clientRequest.put("wheelChair","no");
+
+                        if(intoxcicated.isChecked()){
+                            clientRequest.put("intoxicated","yes");
+                        }else
+                            clientRequest.put("intoxicated","no");
+
+                        if(elderly.isChecked()){
+                            clientRequest.put("elderly","yes");
+                        }else
+                            clientRequest.put("elderly","no");
+
+                        if(uwwStudent.isChecked()){
+                            clientRequest.put("uwwStudent","yes");
+                        }else
+                            clientRequest.put("uwwStudent","no");
 
                         Call<Result> call = retrofitInterface.executeClientRequest(clientRequest);
                         call.enqueue(new Callback<Result>() {

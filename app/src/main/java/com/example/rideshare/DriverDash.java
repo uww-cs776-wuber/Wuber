@@ -20,6 +20,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.NavController;
@@ -33,11 +34,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.CompoundButton;
 
+import java.text.DecimalFormat;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit2.Call;
@@ -65,11 +69,11 @@ public class DriverDash extends AppCompatActivity implements Runnable {
         return driverDash;
     }
     public String driverLocation="";
-    public Location dLoc;
+    public Location dLoc= new Location("0.0");
     public Double driverLat = 0.0;
     public Double driverLong = 0.0;
     public String username="";
-    public boolean SortByDistance = false;
+    public boolean SortByDistance = true;
     public AES_encrpyt encryption= new AES_encrpyt();
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -106,9 +110,9 @@ public class DriverDash extends AppCompatActivity implements Runnable {
         recyclerView= (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView2= (RecyclerView) findViewById(R.id.recyclerView2);
         retrofitInterface= retrofit.create(RetrofitInterface.class);
-
-        getRequest(); // Get details of all passenger request on recycler view
-
+        //if(dLoc.getLongitude()!=0.0 || dLoc.getLatitude()!=0.0)
+      //  try{Thread.sleep(1000); getRequest();}catch(InterruptedException e){System.out.println(e);}
+        getRequest();
         start(); // start the get passenger request thread. This thread executes every 30 seconds
         //Location service to get GPS location of driver
         
@@ -130,11 +134,14 @@ public class DriverDash extends AppCompatActivity implements Runnable {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                 driverLocation = location.getLatitude() + "," + location.getLongitude();
+                driverLocation = location.getLatitude() + "," + location.getLongitude();
                 driverLat = location.getLatitude();
                 driverLong = location.getLongitude();
                 Log.d("LOCATION DEBUG:", "LAT: " + String.valueOf(driverLat));
                 navLocation.setText("\nGPS : " + driverLocation);
+                dLoc.setLongitude(location.getLongitude());
+                dLoc.setLatitude(location.getLatitude());
+
             }
 
             @Override
@@ -199,29 +206,35 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                     String emailArray[]= new String[results.size()];
                     String pickupArray[]= new String[results.size()];
                     String driverArray[]= new String[results.size()];
+                    String wheelChair[] = new String[results.size()];
+                    String uwwStudent[]=new String[results.size()];
+                    String elderly[]=new String[results.size()];
+                    String intoxicated[]=new String[results.size()];
                     int i=0;
-                    dLoc = GetPassengerLocation(driverLocation);
-                    
-                    Toast.makeText(DriverDash.this, String.valueOf(dLoc.getLatitude()), Toast.LENGTH_LONG).show();
+
                     if (dLoc != null) {
                         results = MergeSortResults(results, SortByDistance);
-                        Toast.makeText(DriverDash.this, "Sorted based on Distance", Toast.LENGTH_LONG).show();
-
+                     //   Toast.makeText(DriverDash.this, "Sorted based on Distance", Toast.LENGTH_LONG).show();
                     }
-                    
-                    for(Result result: results){
-                        displayRequest="";
-                        Location tmpLocation = GetPassengerLocation(result.getGpsCordinates());  
-                        displayRequest += "Passenger: " + result.getEmail() + "\n";
-                        try {
-                            displayRequest += "Distance: " + ((dLoc.distanceTo(tmpLocation) / 1000) * 0.62137f) + "Miles \n";
-                        } catch (Exception e) {
 
-                        } finally {
-                            Toast.makeText(DriverDash.this, "Final Block Reached", Toast.LENGTH_LONG).show();
-                        }
+                    for(Result result: results){
+                        DecimalFormat df = new DecimalFormat("#.###");
+                        Double distance=0.0;
+                        displayRequest="";
+                        Location tmpLocation = GetPassengerLocation(result.getGpsCordinates());
                         displayRequest+="Passenger: "+result.getEmail()+"\n";
-                    //    displayRequest+="Location: "+result.getGpsCordinates()+"\n";
+                        try {
+                            if(dLoc.getLongitude()==0.0 || dLoc.getLatitude()==0.0) {
+                                displayRequest += "Distance from passenger: Calculating ... \n";
+                            }
+                            else{
+                                distance=(double)dLoc.distanceTo(tmpLocation)/1000 * 0.621;
+
+                                displayRequest += "Distance from passenger: " + df.format(distance)+ " Miles \n";
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(DriverDash.this, "No gps", Toast.LENGTH_LONG).show();
+                        }
                         displayRequest+="Destination: "+result.getDestination()+"\n";
                         displayRequest+="Pickup Time: "+result.getPickupTime()+"\n";
                         reqArray[i]= displayRequest;
@@ -230,10 +243,14 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                         destinationArray[i]= result.getDestination();
                         pickupArray[i]= result.getPickupTime();
                         driverArray[i]="";
+                        wheelChair[i]=result.getWheelChair();
+                        uwwStudent[i]=result.getUwwStudent();
+                        elderly[i]=result.getElderly();
+                        intoxicated[i]=result.getIntoxicated();
                         i++;
                         rideNotificaton(result.getEmail(),result.getGpsCordinates(),result.getDestination(),result.getPickupTime());
                     }
-                    RideRequest_RecyclerAdapter rideRequestRecyclerAdapter = new RideRequest_RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray, pickupArray,username,driverArray);
+                    RideRequest_RecyclerAdapter rideRequestRecyclerAdapter = new RideRequest_RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray, pickupArray,username,driverArray,wheelChair,uwwStudent,elderly,intoxicated);
                     recyclerView.setAdapter(rideRequestRecyclerAdapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(DriverDash.this));
                 } else if (response.code() == 400) {
@@ -260,6 +277,10 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                     String emailArray[]= new String[results.size()];
                     String pickupArray[]= new String[results.size()];
                     String driverArray[]= new String[results.size()];
+                    String wheelChair[] = new String[results.size()];
+                    String uwwStudent[]=new String[results.size()];
+                    String elderly[]=new String[results.size()];
+                    String intoxicated[]=new String[results.size()];
                     int i=0;
                     for(Result result: results){
                         displayRequest="";
@@ -274,10 +295,14 @@ public class DriverDash extends AppCompatActivity implements Runnable {
                         destinationArray[i]= result.getDestination();
                         pickupArray[i]= result.getPickupTime();
                         driverArray[i]=result.getDriver();
+                        wheelChair[i]=result.getWheelChair();
+                        uwwStudent[i]=result.getUwwStudent();
+                        elderly[i]=result.getElderly();
+                        intoxicated[i]=result.getIntoxicated();
                         i++;
                     }
 
-                  RideInProgress_RecyclerAdapter rideInProgress_recyclerAdapter = new RideInProgress_RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray, pickupArray,username,driverArray);
+                  RideInProgress_RecyclerAdapter rideInProgress_recyclerAdapter = new RideInProgress_RecyclerAdapter(DriverDash.this,reqArray,emailArray,locationArray,destinationArray, pickupArray,username,driverArray,wheelChair,uwwStudent,elderly,intoxicated);
                     recyclerView2.setAdapter(rideInProgress_recyclerAdapter);
                     recyclerView2.setLayoutManager(new LinearLayoutManager(DriverDash.this));
                 } else if (response.code() == 400) {
@@ -387,7 +412,7 @@ public class DriverDash extends AppCompatActivity implements Runnable {
             passengerLoc.setLatitude(Double.parseDouble(gps[0]));
         }
         catch (Exception e){
-            Toast.makeText(DriverDash.this, "Parse Failed", Toast.LENGTH_LONG).show();
+          //  Toast.makeText(DriverDash.this, "Parse Failed", Toast.LENGTH_LONG).show();
         }
         return passengerLoc;
     }

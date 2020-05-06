@@ -27,15 +27,62 @@
                 android:id="@+id/driverLocation"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginTop="62dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginStart="251dp"
+                android:layout_marginLeft="251dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
                 android:background="@drawable/passenger_destination_button"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/map"
+                app:layout_constraintEnd_toStartOf="@+id/close"
+                app:layout_constraintStart_toEndOf="@+id/ClientImage"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@android:drawable/ic_dialog_map" />
+
+            <ImageButton
+                android:id="@+id/wheelIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/wheelchair"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/elderIcon" />
+
+            <ImageButton
+                android:id="@+id/elderIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/elder"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/intoxIcon" />
+
+            <ImageButton
+                android:id="@+id/intoxIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="11dp"
+                android:layout_marginRight="11dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/drunk"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/uwwStdIcon" />
+
+            <ImageButton
+                android:id="@+id/uwwStdIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="64dp"
+                android:layout_marginEnd="11dp"
+                android:layout_marginRight="11dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/warhawks_300"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/map"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/ClientImage"
@@ -54,14 +101,14 @@
                 android:id="@+id/ClientRequestDetails"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
+                android:layout_marginBottom="24dp"
                 android:textColor="#000"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.064"
-
+                app:layout_constraintHorizontal_bias="0.051"
                 app:layout_constraintStart_toEndOf="@+id/ClientImage"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.506" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/map"

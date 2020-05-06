@@ -9,6 +9,7 @@ public class Result {
     private String pickuptime;
     private String arrived;
     private String passengerRequestStatus;
+    private String wheelChair, uwwStudent, elderly, intoxicated;
     public String getEmail() {
         return email;
     }
@@ -26,5 +27,21 @@ public class Result {
     public String getArrived() { return arrived; }
     public String getPassengerRequestStatus() {
         return passengerRequestStatus;
+    }
+
+    public String getWheelChair() {
+        return wheelChair;
+    }
+
+    public String getUwwStudent() {
+        return uwwStudent;
+    }
+
+    public String getElderly() {
+        return elderly;
+    }
+
+    public String getIntoxicated() {
+        return intoxicated;
     }
 }
