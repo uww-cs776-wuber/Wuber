@@ -200,6 +200,29 @@ mongoClient.connect(url, (err, db) => {
         }
       });
     });
+    app.post("/downloadascsv", function(req,res,next) {
+    //Route to download RideService table to csv 
+        console.log("DownloadasCsvroutereached")
+        const CurrTable = rideService;//Get correct table
+        CurrTable.find({}).toArray(function(err, result) {//Should retrieve all rides 
+        if (err) throw err;
+        console.log(result);
+        var jsonRideData = result;//Store all rideData in this variable
+        //Read json to csv
+        const json2csv = require('json2csv').parse;
+        const fs = require('fs');
+        var fields = ['email','destination','pickuptime','driver','arrived']; //Other values are encrypted and not really needed for this
+        var csv = json2csv(result,{fields : fields});
+        console.log(csv);//Confirm data is correct
+        var now = Date.now();
+        fs.writeFile('logfile.csv'+now,csv,function(err){
+          if(err) throw err;
+          console.log('file saved');
+        });
+
+        db.close();
+        });
+    });
     app.delete("/closeClientRequest/:email", (req, res) => {
       // Route to delete the request of the passenger by the driver after pickup is done.
       const email = { email: req.params.email };
