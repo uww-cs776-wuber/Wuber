@@ -20,15 +20,23 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NotificationCompat;
+<<<<<<< HEAD
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+=======
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.CheckBox;
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+<<<<<<< HEAD
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -36,6 +44,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+=======
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,10 +61,18 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     private LocationManager locationManager;
     private LocationListener locationListener;
     public TextView locationTxt, timeTxt, usernameTxt;
+<<<<<<< HEAD
     public EditText destinationTxt;
     String username, mapDriverLocation = "";
     private Thread worker;
 
+=======
+    public CheckBox wheelChair, uwwStudent, elderly, intoxcicated;
+    public EditText destinationTxt;
+    String username, mapDriverLocation = "";
+    private Thread worker;
+    public int hr=0,min=0;
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
     public AES_encrpyt encryption = new AES_encrpyt();
     public String EncryptedEmail = "", EncryptedPassword = "", EncrpytedUserType = "", DecryptedEmail = "", DecryptedUserType = "", EncryptedUserLocation = "", EncryptedUserDestination = "", EncryptedPickupTime = "";
 
@@ -83,6 +105,13 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         usernameTxt.setText(username);
         checkRideStatus(username);
         findViewById(R.id.driverInfo).setVisibility(View.INVISIBLE);
+<<<<<<< HEAD
+=======
+        wheelChair=(CheckBox) findViewById(R.id.wheelChair);
+        uwwStudent=(CheckBox) findViewById(R.id.uwwStudent);
+        elderly=(CheckBox) findViewById(R.id.elderly);
+        intoxcicated=(CheckBox) findViewById(R.id.intoxicated);
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         locationTxt = (TextView) findViewById(R.id.location);
         destinationTxt = (EditText) findViewById(R.id.destinationTxt);
         getRequest();
@@ -122,6 +151,41 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                 getLocation();
             }
         }
+<<<<<<< HEAD
+=======
+        wheelChair.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    Toast.makeText(PassengerDashboard.this,"Passenger is requesting for wheelchair",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        uwwStudent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    Toast.makeText(PassengerDashboard.this,"Passenger is a UWW Student",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        intoxcicated.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    Toast.makeText(PassengerDashboard.this,"Passenger is intoxicated",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        elderly.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    Toast.makeText(PassengerDashboard.this,"Passenger is elderly",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
 
         // Function to handle Request ride from client
         findViewById(R.id.requestRide).setOnClickListener(new View.OnClickListener() {
@@ -151,6 +215,29 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
                         clientRequest.put("gpsCordinates", EncryptedUserLocation);
                         clientRequest.put("pickuptime", EncryptedPickupTime);
 
+<<<<<<< HEAD
+=======
+                        if(wheelChair.isChecked()){
+                            clientRequest.put("wheelChair","yes");
+                        }else
+                            clientRequest.put("wheelChair","no");
+
+                        if(intoxcicated.isChecked()){
+                            clientRequest.put("intoxicated","yes");
+                        }else
+                            clientRequest.put("intoxicated","no");
+
+                        if(elderly.isChecked()){
+                            clientRequest.put("elderly","yes");
+                        }else
+                            clientRequest.put("elderly","no");
+
+                        if(uwwStudent.isChecked()){
+                            clientRequest.put("uwwStudent","yes");
+                        }else
+                            clientRequest.put("uwwStudent","no");
+
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
                         Call<Result> call = retrofitInterface.executeClientRequest(clientRequest);
                         call.enqueue(new Callback<Result>() {
                             @Override
@@ -259,7 +346,10 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
         alertDialog.show();
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
     public void setTime(View view) {
         DialogFragment timePicker = new TimePickerFragment();
         timePicker.show(getSupportFragmentManager(), "time picker");
@@ -268,9 +358,41 @@ public class PassengerDashboard extends AppCompatActivity implements TimePickerD
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         TextView timeTxt = (TextView) findViewById(R.id.timeTxt);
+<<<<<<< HEAD
         timeTxt.setText(hourOfDay + ":" + minute);
     }
 
+=======
+        hr=hourOfDay;
+        min=minute;
+        if(checkTime(hr,min).equals("true")){
+            timeTxt.setText(hourOfDay + ":" + minute);
+        }
+        else
+            timeTxt.setText("");
+
+    }
+
+    public String checkTime(int hour, int min) {
+        String timeStat="true";
+        Date currentTime = Calendar.getInstance().getTime();
+        int currentHr=currentTime.getHours();
+        int currentMin=currentTime.getMinutes();
+        if( currentHr>hour) {
+            timeStat="false";
+            Toast.makeText(PassengerDashboard.this, "The Time you selected has already passed. Please select a valid time.",Toast.LENGTH_LONG).show();
+        }
+        if( currentMin> min){
+            if(currentHr>=hour){
+                timeStat="false";
+                Toast.makeText(PassengerDashboard.this,"The Time you selected has already passed. Please select a valid time.",Toast.LENGTH_LONG).show();
+            }
+        }
+    return timeStat;
+    }
+
+
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
     public void start() { //function to start the thread
         worker = new Thread(this);
         worker.start();

@@ -23,6 +23,7 @@
             android:background="@drawable/custom_card_view_blue"
             android:id="@+id/request_card">
 
+<<<<<<< HEAD
             <ImageButton
                 android:id="@+id/driverLocation"
                 android:layout_width="30dp"
@@ -38,6 +39,8 @@
                 app:layout_constraintVertical_bias="1.0"
                 app:srcCompat="@android:drawable/ic_dialog_map" />
 
+=======
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
             <ImageView
                 android:id="@+id/ClientImage"
                 android:layout_width="80dp"
@@ -68,16 +71,73 @@
                 android:id="@+id/map"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+<<<<<<< HEAD
                 android:layout_marginTop="11dp"
                 android:layout_marginEnd="7dp"
                 android:layout_marginRight="7dp"
                 android:layout_marginBottom="59dp"
                 android:background="@drawable/add_button"
                 app:layout_constraintBottom_toBottomOf="parent"
+=======
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:background="@drawable/add_button"
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@android:drawable/ic_menu_add" />
 
+<<<<<<< HEAD
+=======
+            <ImageButton
+                android:id="@+id/elderIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:background="@drawable/elder"
+                app:layout_constraintEnd_toStartOf="@+id/intoxIcon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/intoxIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/drunk"
+                app:layout_constraintEnd_toStartOf="@+id/wheelIcon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/wheelIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:background="@drawable/wheelchair"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/map" />
+
+            <ImageButton
+                android:id="@+id/uwwStdIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="181dp"
+                android:layout_marginLeft="181dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/warhawks_300"
+                app:layout_constraintEnd_toStartOf="@+id/elderIcon"
+                app:layout_constraintStart_toEndOf="@+id/ClientImage"
+                app:layout_constraintTop_toTopOf="parent" />
+
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>

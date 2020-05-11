@@ -28,12 +28,21 @@ public class RideInProgress_RecyclerAdapter extends RecyclerView.Adapter<RideInP
 
     public RetrofitInterface retrofitInterface;
     public Retrofit retrofit;
+<<<<<<< HEAD
     String request[],location[],destination[],email[],pickup[], driverName[];
     Context context;
     String username="" ;
     String BASEURL = retrofitInterface.BASEURL;
 
     public RideInProgress_RecyclerAdapter(Context ct, String req[], String em[], String loc[], String des[], String pick[], String user, String driver[]){
+=======
+    String request[],location[],destination[],email[],pickup[], driverName[], wheelChair[],uwwStudent[],elderly[],intoxicated[];
+    Context context;
+    String username="";
+    String BASEURL = retrofitInterface.BASEURL;
+
+    public RideInProgress_RecyclerAdapter(Context ct, String req[], String em[], String loc[], String des[], String pick[], String user, String driver[], String wheels[], String uww[], String elder[], String intox[]){
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         context=ct;
         request=req;
         location=loc;
@@ -42,6 +51,13 @@ public class RideInProgress_RecyclerAdapter extends RecyclerView.Adapter<RideInP
         pickup=pick;
         username=user;
         driverName=driver;
+<<<<<<< HEAD
+=======
+        wheelChair=wheels;
+        uwwStudent=uww;
+        elderly=elder;
+        intoxicated=intox;
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
     }
 
     @NonNull
@@ -55,6 +71,31 @@ public class RideInProgress_RecyclerAdapter extends RecyclerView.Adapter<RideInP
     @Override
     public void onBindViewHolder(@NonNull RideInProgress_RecyclerAdapter.RequestViewHolder requestViewHolder, final int i) {
         requestViewHolder.requestDetails.setText(request[i]);
+<<<<<<< HEAD
+=======
+        requestViewHolder.wheelChairIcon.setVisibility(View.INVISIBLE);
+        requestViewHolder.uwwStdIcon.setVisibility(View.INVISIBLE);
+        requestViewHolder.elderIcon.setVisibility(View.INVISIBLE);
+        requestViewHolder.intoxIcon.setVisibility(View.INVISIBLE);
+        if(wheelChair[i]!=null && elderly[i]!=null && uwwStudent[i]!=null && intoxicated[i]!=null) {
+            if (wheelChair[i].equals("yes")) {
+                requestViewHolder.wheelChairIcon.setVisibility(View.VISIBLE);
+            }
+
+            if (elderly[i].equals("yes")) {
+                requestViewHolder.elderIcon.setVisibility(View.VISIBLE);
+            }
+
+            if (uwwStudent[i].equals("yes")) {
+                requestViewHolder.uwwStdIcon.setVisibility(View.VISIBLE);
+            }
+
+            if (intoxicated[i].equals("yes")) {
+                requestViewHolder.intoxIcon.setVisibility(View.VISIBLE);
+            }
+        }
+
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
 
         requestViewHolder.mapLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,9 +127,13 @@ public class RideInProgress_RecyclerAdapter extends RecyclerView.Adapter<RideInP
 
             @Override
             public void onClick(View v) {
+<<<<<<< HEAD
                 LogRequest(i);
                 DeleteRequest(i);
 
+=======
+                DeleteRequest(i);
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
             }
         });
 
@@ -129,6 +174,7 @@ public class RideInProgress_RecyclerAdapter extends RecyclerView.Adapter<RideInP
         alertDialog.show();
     }
 
+<<<<<<< HEAD
     public void LogRequest(final int i){
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle("Log Ride?");
@@ -169,6 +215,8 @@ public class RideInProgress_RecyclerAdapter extends RecyclerView.Adapter<RideInP
         alertDialog.show();
     }
 
+=======
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
     public void rideService(String email, String location, String destination, String pickup, String username, String driverLocation, final String arrived){
 
         if(arrived.equals("yes")) {
@@ -218,6 +266,7 @@ public class RideInProgress_RecyclerAdapter extends RecyclerView.Adapter<RideInP
 
     public class RequestViewHolder extends RecyclerView.ViewHolder{
         TextView requestDetails;
+<<<<<<< HEAD
         ImageView clientImage;
         ImageButton mapLocation, close, driverLocation;
         ConstraintLayout request_card;
@@ -230,6 +279,24 @@ public class RideInProgress_RecyclerAdapter extends RecyclerView.Adapter<RideInP
             close=itemView.findViewById(R.id.close);
             driverLocation=itemView.findViewById(R.id.driverLocation);
             request_card=itemView.findViewById(R.id.request_card);
+=======
+        ImageView clientImage, wheelChairIcon,uwwStdIcon,elderIcon,intoxIcon;
+        ImageButton mapLocation, close, driverLocation;
+        ConstraintLayout request_card;
+
+    public RequestViewHolder(@NonNull View itemView) {
+        super(itemView);
+        requestDetails=itemView.findViewById(R.id.ClientRequestDetails);
+        clientImage=itemView.findViewById(R.id.ClientImage);
+        mapLocation=itemView.findViewById(R.id.map);
+        close=itemView.findViewById(R.id.close);
+        driverLocation=itemView.findViewById(R.id.driverLocation);
+        request_card=itemView.findViewById(R.id.request_card);
+        wheelChairIcon=itemView.findViewById(R.id.wheelIcon);
+        uwwStdIcon=itemView.findViewById(R.id.uwwStdIcon);
+        elderIcon=itemView.findViewById(R.id.elderIcon);
+        intoxIcon=itemView.findViewById(R.id.intoxIcon);
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         }
     }
 }

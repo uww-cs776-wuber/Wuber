@@ -9,6 +9,10 @@ public class Result {
     private String pickuptime;
     private String arrived;
     private String passengerRequestStatus;
+<<<<<<< HEAD
+=======
+    private String wheelChair, uwwStudent, elderly, intoxicated;
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
     public String getEmail() {
         return email;
     }
@@ -27,4 +31,23 @@ public class Result {
     public String getPassengerRequestStatus() {
         return passengerRequestStatus;
     }
+<<<<<<< HEAD
+=======
+
+    public String getWheelChair() {
+        return wheelChair;
+    }
+
+    public String getUwwStudent() {
+        return uwwStudent;
+    }
+
+    public String getElderly() {
+        return elderly;
+    }
+
+    public String getIntoxicated() {
+        return intoxicated;
+    }
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
 }

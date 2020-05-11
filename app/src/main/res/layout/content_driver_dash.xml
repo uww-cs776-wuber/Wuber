@@ -21,7 +21,11 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView2"
         android:layout_width="match_parent"
+<<<<<<< HEAD
         android:layout_height="320dp"
+=======
+        android:layout_height="330dp"
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         android:background="#ffff"
 
         app:layout_constraintBottom_toBottomOf="parent"
@@ -32,7 +36,11 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
+<<<<<<< HEAD
         android:layout_height="425dp"
+=======
+        android:layout_height="400dp"
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         android:background="#ffff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

@@ -75,7 +75,11 @@
         android:layout_marginLeft="54dp"
         android:layout_marginEnd="54dp"
         android:layout_marginRight="54dp"
+<<<<<<< HEAD
         android:layout_marginBottom="16dp"
+=======
+        android:layout_marginBottom="10dp"
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         android:background="@drawable/custom_ride_request_button"
         android:text="Request Ride"
         android:textColor="#fff"
@@ -106,15 +110,25 @@
         app:layout_constraintTop_toBottomOf="@+id/location" />
 
     <TextView
+<<<<<<< HEAD
         android:background="@drawable/custom_input_form"
+=======
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         android:id="@+id/timeTxt"
         android:layout_width="131dp"
         android:layout_height="47dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
+<<<<<<< HEAD
         android:layout_marginTop="27dp"
         android:layout_marginEnd="140dp"
         android:layout_marginRight="140dp"
+=======
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="140dp"
+        android:layout_marginRight="140dp"
+        android:background="@drawable/custom_input_form"
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         android:gravity="center"
         android:hint="Press the clock"
         android:textAlignment="center"
@@ -130,7 +144,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="68dp"
         android:layout_marginLeft="68dp"
+<<<<<<< HEAD
         android:layout_marginTop="17dp"
+=======
+        android:layout_marginTop="10dp"
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         android:background="#fff"
         android:onClick="setTime"
         android:textColor="#fff"
@@ -143,6 +161,7 @@
         android:id="@+id/driverInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:layout_marginStart="159dp"
         android:layout_marginLeft="159dp"
         android:layout_marginEnd="159dp"
@@ -155,6 +174,16 @@
         app:layout_constraintBottom_toTopOf="@+id/requestRide"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
+=======
+        android:layout_marginStart="28dp"
+        android:layout_marginLeft="28dp"
+
+        android:layout_marginBottom="41dp"
+        android:hint="Driver Info"
+        android:textColor="#000"
+        android:textSize="8sp"
+        app:layout_constraintBottom_toTopOf="@+id/requestRide"
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
@@ -168,4 +197,91 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/passengericon" />
 
+<<<<<<< HEAD
+=======
+    <CheckBox
+        android:id="@+id/elderly"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.435"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/intoxicated" />
+
+    <CheckBox
+        android:id="@+id/uwwStudent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.435"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/elderly" />
+
+    <CheckBox
+        android:id="@+id/intoxicated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.435"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/wheelChair" />
+
+    <CheckBox
+        android:id="@+id/wheelChair"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.435"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timeTxt" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/wheelchair"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.059"
+        app:layout_constraintStart_toEndOf="@+id/wheelChair"
+        app:layout_constraintTop_toBottomOf="@+id/timeTxt" />
+
+    <ImageButton
+        android:id="@+id/imageButton4"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/warhawks_300"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.059"
+        app:layout_constraintStart_toEndOf="@+id/uwwStudent"
+        app:layout_constraintTop_toBottomOf="@+id/imageButton3" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/drunk"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.059"
+        app:layout_constraintStart_toEndOf="@+id/intoxicated"
+        app:layout_constraintTop_toBottomOf="@+id/imageButton" />
+
+    <ImageButton
+        android:id="@+id/imageButton3"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/elder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.059"
+        app:layout_constraintStart_toEndOf="@+id/elderly"
+        app:layout_constraintTop_toBottomOf="@+id/imageButton2" />
+
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
 </android.support.constraint.ConstraintLayout>

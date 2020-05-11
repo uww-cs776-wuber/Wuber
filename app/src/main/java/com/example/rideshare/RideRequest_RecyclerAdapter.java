@@ -27,12 +27,20 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RideRequest_RecyclerAdapter extends RecyclerView.Adapter<RideRequest_RecyclerAdapter.RequestViewHolder> {
     public RetrofitInterface retrofitInterface;
     public Retrofit retrofit;
+<<<<<<< HEAD
     String request[],location[],destination[],email[],pickup[], driverName[];
+=======
+    String request[],location[],destination[],email[],pickup[], driverName[], wheelChair[],uwwStudent[],elderly[],intoxicated[];
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
     Context context;
     String username="";
     String BASEURL = retrofitInterface.BASEURL;
 
+<<<<<<< HEAD
     public RideRequest_RecyclerAdapter(Context ct, String req[], String em[], String loc[], String des[], String pick[], String user, String driver[]){
+=======
+    public RideRequest_RecyclerAdapter(Context ct, String req[], String em[], String loc[], String des[], String pick[], String user, String driver[], String wheels[], String uww[], String elder[], String intox[]){
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         context=ct;
         request=req;
         location=loc;
@@ -41,6 +49,13 @@ public class RideRequest_RecyclerAdapter extends RecyclerView.Adapter<RideReques
         pickup=pick;
         username=user;
         driverName=driver;
+<<<<<<< HEAD
+=======
+        wheelChair=wheels;
+        uwwStudent=uww;
+        elderly=elder;
+        intoxicated=intox;
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
     }
 
     @NonNull
@@ -53,8 +68,32 @@ public class RideRequest_RecyclerAdapter extends RecyclerView.Adapter<RideReques
 
     @Override
     public void onBindViewHolder(@NonNull RequestViewHolder requestViewHolder,  final int i) {
+<<<<<<< HEAD
        // requestViewHolder.close.setVisibility(View.INVISIBLE);
         requestViewHolder.driverLocation.setVisibility(View.INVISIBLE);
+=======
+        requestViewHolder.wheelChairIcon.setVisibility(View.INVISIBLE);
+        requestViewHolder.uwwStdIcon.setVisibility(View.INVISIBLE);
+        requestViewHolder.elderIcon.setVisibility(View.INVISIBLE);
+        requestViewHolder.intoxIcon.setVisibility(View.INVISIBLE);
+        if(wheelChair[i]!=null && elderly[i]!=null && uwwStudent[i]!=null && intoxicated[i]!=null) {
+            if (wheelChair[i].equals("yes")) {
+                requestViewHolder.wheelChairIcon.setVisibility(View.VISIBLE);
+            }
+
+            if (elderly[i].equals("yes")) {
+                requestViewHolder.elderIcon.setVisibility(View.VISIBLE);
+            }
+
+            if (uwwStudent[i].equals("yes")) {
+                requestViewHolder.uwwStdIcon.setVisibility(View.VISIBLE);
+            }
+
+            if (intoxicated[i].equals("yes")) {
+                requestViewHolder.intoxIcon.setVisibility(View.VISIBLE);
+            }
+        }
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         requestViewHolder.requestDetails.setText(request[i]); // request details of passenger get shown here at requestDetails.
         requestViewHolder.mapLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +107,11 @@ public class RideRequest_RecyclerAdapter extends RecyclerView.Adapter<RideReques
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 if(!DriverDash.getInstance().driverLocation.equals(""))
+<<<<<<< HEAD
                                     rideService(email[i],location[i],destination[i],pickup[i],username,DriverDash.getInstance().driverLocation,"no");
+=======
+                                    rideService(email[i],location[i],destination[i],pickup[i],username,DriverDash.getInstance().driverLocation,"no",wheelChair[i],elderly[i],intoxicated[i],uwwStudent[i]);
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
                                 else
                                     Toast.makeText(context,"You do not have your GPS location available at the moment. \nPlease drag the nav bar to check if your GPS location is available.",Toast.LENGTH_LONG).show();
                             }
@@ -84,7 +127,11 @@ public class RideRequest_RecyclerAdapter extends RecyclerView.Adapter<RideReques
         retrofitInterface= retrofit.create(RetrofitInterface.class);
     }
 
+<<<<<<< HEAD
     public void rideService(String email, String location, String destination, String pickup, String username, String driverLocation, final String arrived){
+=======
+    public void rideService(String email, String location, String destination, String pickup, String username, String driverLocation, final String arrived, String wheelChair, String elderly, String intoxicated, String uwwStudent){
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
 
        if(arrived.equals("yes")) {
            Uri gmmIntentUri = Uri.parse("google.navigation:q=" + destination);
@@ -101,6 +148,30 @@ public class RideRequest_RecyclerAdapter extends RecyclerView.Adapter<RideReques
         takePassenger.put("driver",username);
         takePassenger.put("driverLocation",driverLocation);
         takePassenger.put("arrived",arrived);
+<<<<<<< HEAD
+=======
+        if(elderly.equals("yes")){
+            takePassenger.put("elderly","yes");
+        }
+        else
+            takePassenger.put("elderly","no");
+        if(uwwStudent.equals("yes")){
+            takePassenger.put("uwwStudent","yes");
+        }
+        else
+            takePassenger.put("uwwStudent","no");
+        if(wheelChair.equals("yes")){
+            takePassenger.put("wheelChair","yes");
+        }
+        else
+            takePassenger.put("wheelChair","no");
+        if(intoxicated.equals("yes")){
+            takePassenger.put("intoxicated","yes");
+        }
+        else
+            takePassenger.put("intoxicated","no");
+
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         Call<Result> call = retrofitInterface.executeTakeRequest(takePassenger);
         call.enqueue(new Callback<Result>() {
             @Override
@@ -148,8 +219,13 @@ public class RideRequest_RecyclerAdapter extends RecyclerView.Adapter<RideReques
 
     public class RequestViewHolder extends  RecyclerView.ViewHolder {
         TextView requestDetails;
+<<<<<<< HEAD
         ImageView clientImage;
         ImageButton mapLocation, driverLocation;
+=======
+        ImageView clientImage, wheelChairIcon,uwwStdIcon,elderIcon,intoxIcon;
+        ImageButton mapLocation;
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
         ConstraintLayout request_card;
 
         public RequestViewHolder(@NonNull View itemView) {
@@ -157,8 +233,15 @@ public class RideRequest_RecyclerAdapter extends RecyclerView.Adapter<RideReques
             requestDetails=itemView.findViewById(R.id.ClientRequestDetails);
             clientImage=itemView.findViewById(R.id.ClientImage);
             mapLocation=itemView.findViewById(R.id.map);
+<<<<<<< HEAD
           //  close=itemView.findViewById(R.id.close);
             driverLocation=itemView.findViewById(R.id.driverLocation);
+=======
+            wheelChairIcon=itemView.findViewById(R.id.wheelIcon);
+            uwwStdIcon=itemView.findViewById(R.id.uwwStdIcon);
+            elderIcon=itemView.findViewById(R.id.elderIcon);
+            intoxIcon=itemView.findViewById(R.id.intoxIcon);
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
             request_card=itemView.findViewById(R.id.request_card);
         }
     }

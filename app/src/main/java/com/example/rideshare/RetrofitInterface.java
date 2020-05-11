@@ -12,7 +12,12 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface RetrofitInterface {
+<<<<<<< HEAD
     String BASEURL="http://192.168.1.6:3000";
+=======
+    //https://uww-uber.herokuapp.com/
+    String BASEURL="https://uww-uber.herokuapp.com/";
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
     @POST("/login")
     Call<Result> executeLogin(@Body HashMap<String,String> map);
     @POST("/signup")
@@ -21,8 +26,11 @@ public interface RetrofitInterface {
     Call<Result> executeClientRequest(@Body HashMap<String,String> map);
     @POST("/takePassenger")
     Call<Result> executeTakeRequest(@Body HashMap<String,String> map);
+<<<<<<< HEAD
     @POST("/logRide")
     Call<Void> executeLogRide(@Body HashMap<String,String> map);
+=======
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
     @GET("/driverNotify")
     Call<List<Result>> executeDriverNotify();
     @GET("/passengerNotify/{email}")

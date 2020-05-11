@@ -200,6 +200,7 @@ mongoClient.connect(url, (err, db) => {
         }
       });
     });
+<<<<<<< HEAD
     app.post("/downloadascsv", function(req,res,next) {
     //Route to download RideService table to csv 
         console.log("DownloadasCsvroutereached")
@@ -223,6 +224,8 @@ mongoClient.connect(url, (err, db) => {
         db.close();
         });
     });
+=======
+>>>>>>> 7a9e0b99345cc93cc8ba96182ff9e7c90994e672
     app.delete("/closeClientRequest/:email", (req, res) => {
       // Route to delete the request of the passenger by the driver after pickup is done.
       const email = { email: req.params.email };
